@@ -8,18 +8,20 @@ namespace VKBot.VkontakteBot.Models
 {
     public class TextMessageHandler : IUpdatesHandler<IIncomingMessage>  
     {
+        //todo:move statics to bot
         static string[] _messageTypes = new[] { "message_new", "message_reply" };
         static string[] _memePhrases = new[] { "!", "говорит:" };
-        static string[] userIds = new[]
+        static string[] _userIds = new[]
         {
             "212515973",//vitya
             //"1556462"//me
         };
+
         public bool CanHandle(IIncomingMessage message, IVityaBot bot)
         {
             return _messageTypes.Contains(message.MessageType.ToLowerInvariant())
                 && !string.IsNullOrWhiteSpace(message.text)
-                && (userIds.Contains(message.from_id) || checkCommand(message.text));
+                && (_userIds.Contains(message.from_id) || checkCommand(message.text));
         }
         public async Task<HandlerResult> HandleAsync(IIncomingMessage message, IVityaBot bot)
         {         
@@ -37,7 +39,7 @@ namespace VKBot.VkontakteBot.Models
         private string tryParseCommand(IIncomingMessage message)
         {
             //todo: regexp or any command parser
-            if (userIds.Contains(message.from_id))
+            if (_userIds.Contains(message.from_id))
             {
                 return message.text;
             }

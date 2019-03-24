@@ -8,17 +8,31 @@ namespace VKBot.VkontakteBot.Models
 {
     public class WallMessageHandler : IUpdatesHandler<IIncomingMessage>
     {
+        //todo:move statics to bot
+        static string[] _messageTypes = new[] { "message_new", "message_reply" };
+        static string[] _userIds = new[]
+        {
+            "212515973",//vitya
+            "1556462"//me
+        };
+        static string _wallPick = "photo179992947_456239019";
+
         public bool CanHandle(IIncomingMessage message, IVityaBot bot)
         {
-            return message.MessageType == "wall" && message.attachments != null && message.attachments.Any(x => x.type == "wall");
+            return _messageTypes.Contains(message.MessageType.ToLowerInvariant()) 
+                && _userIds.Contains(message.from_id)
+                && message.attachments != null && message.attachments.Any(x => x.type == "wall");
         }
         public async Task<HandlerResult> HandleAsync(IIncomingMessage message, IVityaBot bot)
         {
-            foreach (var attach in message.attachments.Where(x => x.type == "wall"))
+            var outgoingMessage = new OutgoingMessage()
             {
-                await bot.SendMessageAsync(new OutgoingMessage() { peer_id = message.peer_id, message = string.Format("Опять всякое говно репостим") });
-            }
-
+                peer_id = message.peer_id,
+                //message = text,
+                attachment = _wallPick,
+                //group_id = message.
+            };
+            await bot.SendMessageAsync(outgoingMessage);
             return new HandlerResult() { message = "ok" };
         }
     }

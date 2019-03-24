@@ -19,7 +19,7 @@ namespace VKBot.Controllers
             new TextMessageHandler(),
             //new PhotoMessageHandler(),
             //new AudioMessageHandler(),
-            //new WallMessageHandler(),
+            new WallMessageHandler(),
             new ConfirmationHandler(),
         };
 
