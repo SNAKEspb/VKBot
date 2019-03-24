@@ -28,7 +28,8 @@ namespace VKBot.VkontakteBot.Models
             {
                 peer_id = message.peer_id,
                 message = string.Format("Все говорят {0}, а ты пошел на хуй", message.text),
-                attachment = photoId
+                attachment = photoId,
+                //group_id = message.
             };
             await bot.SendMessageAsync(outgoingMessage);
             return new HandlerResult() { message = "ok" };

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
+using System.Text;
 
 namespace VKBot
 {
@@ -19,6 +20,7 @@ namespace VKBot
             var logger = NLog.Web.NLogBuilder.ConfigureNLog("NLog.config").GetCurrentClassLogger();
             try
             {
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 logger.Debug("init main");
                 CreateWebHostBuilder(args).Build().Run();
             }

@@ -16,10 +16,10 @@ namespace VKBot.Controllers
         static IVityaBot bot = VkBot.getinstanse(_logger);
         static List<IUpdatesHandler<IIncomingMessage>> updatesHandler = new List<IUpdatesHandler<IIncomingMessage>>()
         {
-            //new TextMessageHandler(),
+            new TextMessageHandler(),
             //new PhotoMessageHandler(),
             //new AudioMessageHandler(),
-            new WallMessageHandler(),
+            //new WallMessageHandler(),
             new ConfirmationHandler(),
         };
 
@@ -41,18 +41,15 @@ namespace VKBot.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            string value = @"{ ""type"": ""confirmation"", ""group_id"": 179992947 }";
-            var message = Newtonsoft.Json.JsonConvert.DeserializeObject<UpdateMessage>(value);
-            ProcessMessagesAsync(bot, message);
-            return NotFound();
+            return Forbid();
         }
 
         // POST api/values
         [HttpPost]
-        public Task<IActionResult> Post([FromBody] string value)
+        async public Task<IActionResult> Post()
         {
-            var message = Newtonsoft.Json.JsonConvert.DeserializeObject<UpdateMessage>(value);
-            return ProcessMessagesAsync(bot, message);
+            var message = Newtonsoft.Json.JsonConvert.DeserializeObject<UpdateMessage>(await getRawBody());
+            return await ProcessMessagesAsync(bot, message);
         }
 
         async Task<IActionResult> ProcessMessagesAsync(IVityaBot bot, IIncomingMessage message)
@@ -74,7 +71,15 @@ namespace VKBot.Controllers
                 Console.WriteLine(ex);
             }
             return Ok("ok");
+        }
 
+        async Task<string> getRawBody()
+        {
+            using (StreamReader reader = new StreamReader(HttpContext.Request.Body, System.Text.Encoding.UTF8))
+            {
+                var result = await reader.ReadToEndAsync();
+                return result;
+            }
         }
     }
 }

@@ -12,5 +12,6 @@ namespace VKBot.VkontakteBot.Models
         public string peer_id { get; set; }
         public string message { get; set; }
         public string attachment { get; set; }
+        public string group_id { get; set; }
     }
 }

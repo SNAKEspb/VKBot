@@ -17,8 +17,8 @@ namespace VKBot
 
         static string _url { get; set; } = "https://api.vk.com/";
        
-        static string _token { get; set; } = "5d711c0cd2689e386490cae8d08d38e8186480330cd1f7a5de4e8fdfb2e02ec4da3881ac991bb0d2fb63e";
-        static string _groupId { get; set; } = "180024929";
+        static string _token { get; set; } = "0c29646fefcc442729f323eaf428f999dba1bcc95abfe3da03d0459c7b55fe6b965a59585b14c7a1c24af";
+        static string _groupId { get; set; } = "179992947";
         static string _apiVersion { get; set; } = "5.92";
         static string _wait { get; set; } = "25";
         static string _confirmationCode { get; set; } = "821df2ec";
@@ -229,7 +229,7 @@ namespace VKBot
                 form.Add(imageContent, "file", System.IO.Path.GetFileName(uri.LocalPath));
                 HttpResponseMessage response = await _httpClient.PostAsync(upload_url, form);
                 response.EnsureSuccessStatusCode();
-                var responseBody = response.Content.ReadAsStringAsync().Result;
+                var responseBody = await response.Content.ReadAsStringAsync();
 
                 _logger.Log(NLog.LogLevel.Info, responseBody);
 

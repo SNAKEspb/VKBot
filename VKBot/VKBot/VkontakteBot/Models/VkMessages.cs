@@ -76,7 +76,7 @@ namespace VKBot.VkontakteBot.Models
 
         public string peer_id => @object.peer_id.ToString();
         public string MessageType => type;
-        public string from_id => @object.peer_id.ToString();
+        public string from_id => @object.from_id.ToString();
 
         public string text => @object.text;
         public List<dynamic> attachments => @object.attachments;
