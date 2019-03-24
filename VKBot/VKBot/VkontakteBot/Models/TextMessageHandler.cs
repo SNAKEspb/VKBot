@@ -64,7 +64,7 @@ namespace VKBot.VkontakteBot.Models
             var outgoingMessage = new OutgoingMessage()
             {
                 peer_id = message.peer_id,
-                message = text,
+                //message = text,
                 attachment = photoId,
                 //group_id = message.
             };
