@@ -1,6 +1,6 @@
-DOTNET_STARTUP_PROJECT=WebApplication1/WebApplication1
+DOTNET_STARTUP_PROJECT=VKBot/VKBot
 DOTNET_CONFIGURATION=Debug
-DOTNET_ASSEMBLY_NAME=WebApplication1
+DOTNET_ASSEMBLY_NAME=VKBot
 DOTNET_RESTORE_SOURCES=https://api.nuget.org/v3/index.json https://www.myget.org/F/s2i-dotnetcore
 DOTNET_PACK=true
 DOTNET_NPM_TOOLS=bower gulp
