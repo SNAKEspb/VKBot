@@ -15,7 +15,7 @@ namespace VKBot.VkontakteBot.Models
             "212515973",//vitya
             "1556462"//me
         };
-        static string _wallPick = "photo179992947_456239019";
+        static string _wallPick = "photo-179992947_456239019";
 
         public bool CanHandle(IIncomingMessage message, IVityaBot bot)
         {
