@@ -78,8 +78,17 @@ namespace VKBot
         public VkBot(NLog.Logger logger)
         {
             _logger = logger;
-            //Google.Apis.Auth.OAuth2.GoogleCredential.FromFile("Cloud Project-a047b1f98427.json");
-            System.Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "Cloud Project-a047b1f98427.json");
+            try
+            {
+                //todo: post cred command
+                //Google.Apis.Auth.OAuth2.GoogleCredential.FromFile("Cloud Project-a047b1f98427.json");
+                System.Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "Cloud Project-a047b1f98427.json");
+            }
+            catch(Exception ex)
+            {
+                _logger.Log(NLog.LogLevel.Info, "VkBot Error");
+                _logger.Log(NLog.LogLevel.Info, ex);
+            }
         }
 
         public string confimationCode => _confirmationCode;
