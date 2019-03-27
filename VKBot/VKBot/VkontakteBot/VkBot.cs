@@ -7,13 +7,14 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using VKBot.VkontakteBot.Models;
+using Google.Cloud.Speech.V1;
 
 namespace VKBot
 {
     public class VkBot : IVityaBot
     {
         static HttpClient _httpClient = new HttpClient();
-        static Random _random = new Random();
+        public static Random _random = new Random();
 
         static string _url { get; set; } = "https://api.vk.com/";
        
@@ -59,6 +60,8 @@ namespace VKBot
         //static string _ts { get; set; }
         //static string _server { get; set; }
 
+        public bool isTest { get; set; } = false;
+
 
         private NLog.Logger _logger;
 
@@ -75,6 +78,8 @@ namespace VKBot
         public VkBot(NLog.Logger logger)
         {
             _logger = logger;
+            //Google.Apis.Auth.OAuth2.GoogleCredential.FromFile("Cloud Project-a047b1f98427.json");
+            System.Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "Cloud Project-a047b1f98427.json");
         }
 
         public string confimationCode => _confirmationCode;
@@ -219,22 +224,26 @@ namespace VKBot
         public async Task<PhotoUploadResponse> uploadPhoto(string upload_url, string url, string peer_id)
         {
             var uri = new Uri(url);
+            _logger.Log(NLog.LogLevel.Info, uri);
             using (WebClient client = new WebClient())
             {
-                byte[] image = await client.DownloadDataTaskAsync(new Uri(url));
+                byte[] image = await client.DownloadDataTaskAsync(uri);
 
                 MultipartFormDataContent form = new MultipartFormDataContent();
-                var imageContent = new ByteArrayContent(image);
-                imageContent.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("multipart/form-data");
-                form.Add(imageContent, "file", System.IO.Path.GetFileName(uri.LocalPath));
-                HttpResponseMessage response = await _httpClient.PostAsync(upload_url, form);
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
+                using (var imageContent = new ByteArrayContent(image))
+                {
 
-                _logger.Log(NLog.LogLevel.Info, responseBody);
+                    imageContent.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("multipart/form-data");
+                    form.Add(imageContent, "file", System.IO.Path.GetFileName(uri.LocalPath));
+                    HttpResponseMessage response = await _httpClient.PostAsync(upload_url, form);
+                    response.EnsureSuccessStatusCode();
+                    var responseBody = await response.Content.ReadAsStringAsync();
 
-                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<PhotoUploadResponse>(responseBody);
-                return result;
+                    _logger.Log(NLog.LogLevel.Info, responseBody);
+
+                    var result = Newtonsoft.Json.JsonConvert.DeserializeObject<PhotoUploadResponse>(responseBody);
+                    return result;
+                }
             }
         }
 
@@ -274,6 +283,7 @@ namespace VKBot
 
         }
 
+        //todo: move to separate service
         public async Task<string> imgFlipCaptionImage(string text)
         {
             var values = new Dictionary<string, string>
@@ -300,5 +310,99 @@ namespace VKBot
             }
             throw new Exception($"Imgflip error:{result.error_message}");
         }
+
+        public async Task processMemeAsync(IIncomingMessage message, string text)
+        {
+            _logger.Log(NLog.LogLevel.Info, $"Process meme for peer_id: {message.peer_id} text:{text}");
+            var memeUrl = await imgFlipCaptionImage(text);
+            var photoId = await savePhotoByUrl(memeUrl, message.peer_id);
+            var outgoingMessage = new OutgoingMessage()
+            {
+                peer_id = message.peer_id,
+                //message = text,
+                attachment = photoId,
+                //group_id = message.
+            };
+            await SendMessageAsync(outgoingMessage);
+        }
+
+        //todo: move to separate audio/google service
+        public async Task<string> audioToText(string url)
+        {
+            try
+            {
+                var uri = new Uri(url);
+                _logger.Log(NLog.LogLevel.Info, uri);
+                using (WebClient client = new WebClient())
+                {
+                    //get audio
+                    byte[] audioSource = await client.DownloadDataTaskAsync(uri);
+                    //System.IO.File.WriteAllBytes("test.mp3", audioSource);
+                    byte[] audioGoogle = ConvertAudio(audioSource);
+                    //System.IO.File.WriteAllBytes("test.wav", audioGoogle);
+                    //ConvertMp3ToWav("test.mp3", "test.wav");
+
+                    //send to google
+                    var speechClient = SpeechClient.Create();
+                    var recognitionConfig = new RecognitionConfig()
+                    {
+                        Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+                        SampleRateHertz = 48000,
+                        LanguageCode = "ru-RU",
+                    };
+                    var recognitionAudio = RecognitionAudio.FromBytes(audioGoogle);
+                    var response = await speechClient.RecognizeAsync(recognitionConfig, recognitionAudio);
+
+                    _logger.Log(NLog.LogLevel.Info, response);
+
+                    return response.Results != null ? response.Results.SelectMany(t => t.Alternatives).Select(t => t.Transcript).FirstOrDefault() : null;
+                }
+            }
+            catch(Exception ex)
+            {
+                //_logger.Log(NLog.LogLevel.Error, e, "getMessagesUploadServer Error");
+                _logger.Log(NLog.LogLevel.Info, "audioToText Error");
+                _logger.Log(NLog.LogLevel.Info, ex);
+                return null;
+            }
+        }
+        //todo: move to separate audio service
+        public byte[] ConvertAudio(byte[] sourceBytes) {
+            using (System.IO.Stream sourceStream = new System.IO.MemoryStream(sourceBytes)) {
+                using (System.IO.Stream destinationStream = new System.IO.MemoryStream())
+                {
+                    ConvertMp3ToWav(sourceStream, destinationStream);
+                    using (var memoryStream = new System.IO.MemoryStream())
+                    {
+                        destinationStream.CopyTo(memoryStream);
+                        return memoryStream.ToArray();
+                    }
+                }
+            }
+        }
+
+        //todo: move to separate audio service
+        private static void ConvertMp3ToWav(System.IO.Stream sourceStream, System.IO.Stream destinationStream)
+        {
+            using (var mp3 = new NAudio.Wave.Mp3FileReader(sourceStream))
+            {
+                using (NAudio.Wave.WaveStream pcm = NAudio.Wave.WaveFormatConversionStream.CreatePcmStream(mp3))
+                {
+                    NAudio.Wave.WaveFileWriter.WriteWavFileToStream(destinationStream, pcm);
+                   // NAudio.Wave.WaveFileWriter.CreateWaveFile("test.wav", pcm);
+                }
+            }
+        }
+
+        //private static void ConvertMp3ToWav(string _inPath_, string _outPath_)
+        //{
+        //    using (NAudio.Wave.Mp3FileReader mp3 = new NAudio.Wave.Mp3FileReader(_inPath_))
+        //    {
+        //        using (NAudio.Wave.WaveStream pcm = NAudio.Wave.WaveFormatConversionStream.CreatePcmStream(mp3))
+        //        {
+        //            NAudio.Wave.WaveFileWriter.CreateWaveFile(_outPath_, pcm);
+        //        }
+        //    }
+        //}
     }
 }

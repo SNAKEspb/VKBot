@@ -16,11 +16,13 @@ namespace VKBot.Controllers
         static IVityaBot bot = VkBot.getinstanse(_logger);
         static List<IUpdatesHandler<IIncomingMessage>> updatesHandler = new List<IUpdatesHandler<IIncomingMessage>>()
         {
-            new TextMessageHandler(),
-            //new PhotoMessageHandler(),
             //new AudioMessageHandler(),
-            new WallMessageHandler(),
+            new CommandMessageHandler(),
             new ConfirmationHandler(),
+            //new PhotoMessageHandler(),
+            new TextMessageHandler(),
+            new VoiceMessageHandler(),
+            new WallMessageHandler(),
         };
 
         //// GET: api/<controller>
@@ -67,8 +69,10 @@ namespace VKBot.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error during bot process");
-                Console.WriteLine(ex);
+                //Console.WriteLine("Error during bot process");
+                //Console.WriteLine(ex);
+                _logger.Log(NLog.LogLevel.Info, "Error during bot process");
+                _logger.Log(NLog.LogLevel.Info, ex);
             }
             return Ok("ok");
         }

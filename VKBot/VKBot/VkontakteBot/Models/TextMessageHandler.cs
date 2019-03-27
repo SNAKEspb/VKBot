@@ -27,7 +27,7 @@ namespace VKBot.VkontakteBot.Models
         {         
             var text = tryParseCommand(message);
 
-            await processMemeAsync(message, bot, text);
+            await bot.processMemeAsync(message, text);
             return new HandlerResult() { message = "ok" };
         }
         //todo: command handler
@@ -56,21 +56,6 @@ namespace VKBot.VkontakteBot.Models
                 } 
             }
             throw new ArgumentException($"Message text is empty");
-        }
-
-        //todo: move to bot
-        private async Task processMemeAsync(IIncomingMessage message, IVityaBot bot, string text)
-        {
-            var memeUrl = await bot.imgFlipCaptionImage(text);
-            var photoId = await bot.savePhotoByUrl(memeUrl, message.peer_id);
-            var outgoingMessage = new OutgoingMessage()
-            {
-                peer_id = message.peer_id,
-                //message = text,
-                attachment = photoId,
-                //group_id = message.
-            };
-            await bot.SendMessageAsync(outgoingMessage);
         }
     }
 }
