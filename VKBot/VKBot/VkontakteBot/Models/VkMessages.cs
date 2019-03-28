@@ -92,5 +92,36 @@ namespace VKBot.VkontakteBot.Models
         public IEnumerable<IIncomingMessage> Updates => updates;
     }
 
+    public class ConvertOnlineResponse
+    {
+        public string id { get; set; }
+        public string token { get; set; }
+        public string type { get; set; }
+        public ConvertOnlineStatus status { get; set; }
+        public List<object> errors { get; set; }
+
+        public List<ConvertOnlineOutput> output { get; set; }
+
+    }
+
+    public class ConvertOnlineStatus
+    {
+        public string code { get; set; }
+        public string info { get; set; }
+    }
+
+    public class ConvertOnlineOutput
+    {
+        public string id { get; set; }
+        public object source { get; set; }
+        public string uri { get; set; }
+        public int size { get; set; }
+        public string status { get; set; }
+        public string content_type { get; set; }
+        public int downloads_counter { get; set; }
+        public string checksum { get; set; }
+        public string created_at { get; set; }
+    }
+
 
 }
