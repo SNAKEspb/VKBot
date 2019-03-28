@@ -58,7 +58,7 @@ namespace VKBot
         static string _ts { get; set; }
         static string _server { get; set; }
 
-        public bool isTest { get; set; };
+        public bool isTest { get; set; }
 
 
         private NLog.Logger _logger;
