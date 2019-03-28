@@ -57,7 +57,7 @@ namespace VKBot
         static string _key { get; set; }
         static string _ts { get; set; }
         static string _server { get; set; }
-
+        //todo: different modes
         public bool isTest { get; set; }
 
 
@@ -203,6 +203,21 @@ namespace VKBot
         //todo: move to separate audio/google service
         public async Task<string> audioToText(string url)
         {
+
+            try
+            {
+                return await mp3ToText(url);
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(NLog.LogLevel.Error, ex, "audioToText Error");
+                return null;
+            }
+        }
+
+        //todo: move convert logic to service
+        public async Task<string> audioToTextOnlineConverter(string url)
+        {
             
             try
             {
@@ -227,68 +242,38 @@ namespace VKBot
                 _logger.Log(NLog.LogLevel.Error, ex, "audioToText Error");
                 return null;
             }
-
         }
 
-        //public async Task<string> mp3ToText(string url)
-        //{
-        //    var uri = new Uri(url);
-        //    _logger.Log(NLog.LogLevel.Info, uri);
-        //    using (WebClient client = new WebClient())
-        //    {
-        //        //get audio
-        //        byte[] audioSource = await client.DownloadDataTaskAsync(uri);
-        //        //System.IO.File.WriteAllBytes("test.mp3", audioSource);
-        //        byte[] audioGoogle = VkontakteBot.Services.Util.ConvertAudio(audioSource);
-        //        //System.IO.File.WriteAllBytes("test.wav", audioGoogle);
-        //        //ConvertMp3ToWav("test.mp3", "test.wav");
+        //todo: move to separate audio/google service
+        public async Task<string> mp3ToText(string url)
+        {
+            var uri = new Uri(url);
+            _logger.Log(NLog.LogLevel.Info, uri);
+            using (WebClient client = new WebClient())
+            {
+                //get audio
+                byte[] audioSource = await client.DownloadDataTaskAsync(uri);
+                
+                byte[] audioGoogle = VkontakteBot.Services.Util.ConvertAudio(audioSource);
+                
+                
 
-        //        //send to google
-        //        var speechClient = SpeechClient.Create();
-        //        var recognitionConfig = new RecognitionConfig()
-        //        {
-        //            Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
-        //            SampleRateHertz = 48000,
-        //            LanguageCode = "ru-RU",
-        //        };
-        //        var recognitionAudio = RecognitionAudio.FromBytes(audioGoogle);
-        //        var response = await speechClient.RecognizeAsync(recognitionConfig, recognitionAudio);
+                //send to google
+                var speechClient = SpeechClient.Create();
+                var recognitionConfig = new RecognitionConfig()
+                {
+                    Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+                    SampleRateHertz = 48000,
+                    LanguageCode = "ru-RU",
+                };
+                var recognitionAudio = RecognitionAudio.FromBytes(audioGoogle);
+                var response = await speechClient.RecognizeAsync(recognitionConfig, recognitionAudio);
 
-        //        _logger.Log(NLog.LogLevel.Info, response);
+                _logger.Log(NLog.LogLevel.Info, response);
 
-        //        return response.Results != null ? response.Results.SelectMany(t => t.Alternatives).Select(t => t.Transcript).FirstOrDefault() : null;
-        //    }
-        //}
-
-        //public async Task<string> oggToText(string url)
-        //{
-        //    var uri = new Uri(url);
-        //    _logger.Log(NLog.LogLevel.Info, uri);
-        //    using (WebClient client = new WebClient())
-        //    {
-        //        //get audio
-        //        byte[] audioSource = await client.DownloadDataTaskAsync(uri);
-        //        System.IO.File.WriteAllBytes("test.ogg", audioSource);
-        //        //byte[] audioGoogle = VkontakteBot.Services.Util.ConvertAudio(audioSource);
-        //        //System.IO.File.WriteAllBytes("test.wav", audioGoogle);
-        //        //ConvertMp3ToWav("test.mp3", "test.wav");
-
-        //        //send to google
-        //        var speechClient = SpeechClient.Create();
-        //        var recognitionConfig = new RecognitionConfig()
-        //        {
-        //            Encoding = RecognitionConfig.Types.AudioEncoding.OggOpus,
-        //            SampleRateHertz = 48000,
-        //            LanguageCode = "ru-RU",
-        //        };
-        //        var recognitionAudio = RecognitionAudio.FromBytes(audioSource);
-        //        var response = await speechClient.RecognizeAsync(recognitionConfig, recognitionAudio);
-
-        //        _logger.Log(NLog.LogLevel.Info, response);
-
-        //        return response.Results != null ? response.Results.SelectMany(t => t.Alternatives).Select(t => t.Transcript).FirstOrDefault() : null;
-        //    }
-        //}
+                return response.Results != null ? response.Results.SelectMany(t => t.Alternatives).Select(t => t.Transcript).FirstOrDefault() : null;
+            }
+        }
 
         //todo: move to google service
         public async Task<string> flacToText(string url)
@@ -304,7 +289,7 @@ namespace VKBot
                 var speechClient = SpeechClient.Create();
                 var recognitionConfig = new RecognitionConfig()
                 {
-                    EnableAutomaticPunctuation = true,
+                    //EnableAutomaticPunctuation = true,
                     Encoding = RecognitionConfig.Types.AudioEncoding.Flac,
                     LanguageCode = "ru-Ru",
                     Model = "default",
