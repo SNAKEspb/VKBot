@@ -9,7 +9,7 @@ namespace VKBot.VkontakteBot.Services
 {
     public class ImgFlipService
     {
-        static string _url { get; set; } = "https://api.vk.com/";
+        static string _url { get; set; } = "https://api.imgflip.com/";
         static HttpClient _httpClient = new HttpClient();
         private NLog.Logger _logger;
 
@@ -20,6 +20,11 @@ namespace VKBot.VkontakteBot.Services
 
         public async Task<string> imgFlipCaptionImage(string id, string text, string username, string password)
         {
+            var urlBuilder = new UriBuilder(_url)
+            {
+                Path = "caption_image"
+            };
+
             var values = new Dictionary<string, string>
             {
                 { "template_id",  id},
@@ -31,7 +36,7 @@ namespace VKBot.VkontakteBot.Services
 
             var content = new FormUrlEncodedContent(values);
 
-            var response = await _httpClient.PostAsync(_url, content);
+            var response = await _httpClient.PostAsync(urlBuilder.Uri, content);
             var responseBody = await response.Content.ReadAsStringAsync();
 
             _logger.Log(NLog.LogLevel.Info, responseBody);

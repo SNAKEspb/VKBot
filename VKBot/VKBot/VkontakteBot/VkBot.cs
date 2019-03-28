@@ -58,7 +58,7 @@ namespace VKBot
         static string _ts { get; set; }
         static string _server { get; set; }
 
-        public bool isTest { get; set; } = true;
+        public bool isTest { get; set; };
 
 
         private NLog.Logger _logger;
@@ -208,7 +208,7 @@ namespace VKBot
             {
                 var result = await onlineConverterService.convert(url);
                 ConvertOnlineResponse checkStatusResult = null;
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 5; i++)
                 {
                     checkStatusResult = await onlineConverterService.checkStatus(result.id);
                     if (checkStatusResult.status.code == "competed" || checkStatusResult.status.code == "failed")
