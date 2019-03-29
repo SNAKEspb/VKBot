@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using VKBot.VkontakteBot.Models;
-using Google.Cloud.Speech.V1;
 
 namespace VKBot
 {
@@ -65,6 +64,7 @@ namespace VKBot
         private VkontakteBot.Services.VKService vkService;
         private VkontakteBot.Services.ImgFlipService imgflipService;
         private VkontakteBot.Services.OnlineConverterService onlineConverterService;
+        private VkontakteBot.Services.GoogleService googleService;
 
 
         private static VkBot _instanse;
@@ -83,6 +83,7 @@ namespace VKBot
             vkService = new VkontakteBot.Services.VKService(logger);
             imgflipService = new VkontakteBot.Services.ImgFlipService(logger);
             onlineConverterService = new VkontakteBot.Services.OnlineConverterService(logger, _onlineConverterApiKey);
+            googleService = new VkontakteBot.Services.GoogleService(logger);
             try
             {
                 //todo: post cred command
@@ -206,7 +207,16 @@ namespace VKBot
 
             try
             {
-                return await mp3ToText(url);
+                var uri = new Uri(url);
+                _logger.Log(NLog.LogLevel.Info, uri);
+                using (WebClient client = new WebClient())
+                {
+                    //get audio
+                    byte[] audioMP3 = await client.DownloadDataTaskAsync(uri);
+                    byte[] audioWav = VkontakteBot.Services.AudioService.decodeMP3ToWavMono(audioMP3);
+                    return await googleService.wavToText(audioWav);
+                }
+                
             }
             catch (Exception ex)
             {
@@ -218,24 +228,16 @@ namespace VKBot
         //todo: move convert logic to service
         public async Task<string> audioToTextOnlineConverter(string url)
         {
-            
             try
             {
-                var result = await onlineConverterService.convert(url);
-                ConvertOnlineResponse checkStatusResult = null;
-                for (int i = 0; i < 5; i++)
+                var uri = new Uri(url);
+                _logger.Log(NLog.LogLevel.Info, uri);
+                using (WebClient client = new WebClient())
                 {
-                    checkStatusResult = await onlineConverterService.checkStatus(result.id);
-                    if (checkStatusResult.status.code == "competed" || checkStatusResult.status.code == "failed")
-                    {
-                        break;
-                    }
-                    await Task.Delay(1000);
-
+                    var flacUrl = await onlineConverterService.convertMp3ToFlac(url);
+                    byte[] audioFlac = await client.DownloadDataTaskAsync(uri);
+                    return await googleService.flacToText(audioFlac);
                 }
-                string flacUrl = checkStatusResult.output.FirstOrDefault().uri;
-
-                return await flacToText(flacUrl);
             }
             catch(Exception ex)
             {
@@ -244,64 +246,8 @@ namespace VKBot
             }
         }
 
-        //todo: move to separate audio/google service
-        public async Task<string> mp3ToText(string url)
-        {
-            var uri = new Uri(url);
-            _logger.Log(NLog.LogLevel.Info, uri);
-            using (WebClient client = new WebClient())
-            {
-                //get audio
-                byte[] audioSource = await client.DownloadDataTaskAsync(uri);
-                
-                byte[] audioGoogle = VkontakteBot.Services.Util.ConvertAudio(audioSource);
-                
-                
+        
 
-                //send to google
-                var speechClient = SpeechClient.Create();
-                var recognitionConfig = new RecognitionConfig()
-                {
-                    Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
-                    SampleRateHertz = 48000,
-                    LanguageCode = "ru-RU",
-                };
-                var recognitionAudio = RecognitionAudio.FromBytes(audioGoogle);
-                var response = await speechClient.RecognizeAsync(recognitionConfig, recognitionAudio);
-
-                _logger.Log(NLog.LogLevel.Info, response);
-
-                return response.Results != null ? response.Results.SelectMany(t => t.Alternatives).Select(t => t.Transcript).FirstOrDefault() : null;
-            }
-        }
-
-        //todo: move to google service
-        public async Task<string> flacToText(string url)
-        {
-            var uri = new Uri(url);
-            _logger.Log(NLog.LogLevel.Info, uri);
-            using (WebClient client = new WebClient())
-            {
-                //get audio
-                byte[] audioSource = await client.DownloadDataTaskAsync(uri);
-
-                //send to google
-                var speechClient = SpeechClient.Create();
-                var recognitionConfig = new RecognitionConfig()
-                {
-                    //EnableAutomaticPunctuation = true,
-                    Encoding = RecognitionConfig.Types.AudioEncoding.Flac,
-                    LanguageCode = "ru-Ru",
-                    Model = "default",
-                    SampleRateHertz = 48000,
-                };
-                var recognitionAudio = RecognitionAudio.FromBytes(audioSource);
-                var response = await speechClient.RecognizeAsync(recognitionConfig, recognitionAudio);
-
-                _logger.Log(NLog.LogLevel.Info, response);
-
-                return response.Results != null ? response.Results.SelectMany(t => t.Alternatives).Select(t => t.Transcript).FirstOrDefault() : null;
-            }
-        }
+        
     }
 }

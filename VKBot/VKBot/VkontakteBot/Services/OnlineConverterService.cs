@@ -20,7 +20,7 @@ namespace VKBot.VkontakteBot.Services
             _httpClient.DefaultRequestHeaders.Add("X-Oc-Api-Key", apiKey);
         }
 
-        public async Task<ConvertOnlineResponse> convert(string sourceUrl)
+        public async Task<ConvertOnlineResponse> startConvertMp3ToFlac(string sourceUrl)
         {
             var urlBuilder = new UriBuilder(_url)
             {
@@ -52,6 +52,23 @@ namespace VKBot.VkontakteBot.Services
             _logger.Log(NLog.LogLevel.Info, response);
 
             return Newtonsoft.Json.JsonConvert.DeserializeObject<ConvertOnlineResponse>(response);
+        }
+
+        public async Task<string> convertMp3ToFlac(string url)
+        {
+            var result = await startConvertMp3ToFlac(url);
+            ConvertOnlineResponse checkStatusResult = null;
+            for (int i = 0; i < 5; i++)
+            {
+                checkStatusResult = await checkStatus(result.id);
+                if (checkStatusResult.status.code == "competed" || checkStatusResult.status.code == "failed")
+                {
+                    break;
+                }
+                await Task.Delay(1000);
+
+            }
+            return checkStatusResult.output.FirstOrDefault().uri;
         }
     }
 }
