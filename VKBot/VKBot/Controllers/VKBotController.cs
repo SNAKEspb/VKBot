@@ -52,10 +52,11 @@ namespace VKBot.Controllers
 
         // POST api/values
         [HttpPost]
-        async public Task<IActionResult> Post()
+        public Task<IActionResult> Post()
         {
-            var message = Newtonsoft.Json.JsonConvert.DeserializeObject<UpdateMessage>(await getRawBody());
-            return await ProcessMessagesAsync(bot, message);
+            var message = Newtonsoft.Json.JsonConvert.DeserializeObject<UpdateMessage>(getRawBody());
+            var process = ProcessMessagesAsync(bot, message);
+            return process;
         }
 
         async Task<IActionResult> ProcessMessagesAsync(IVityaBot bot, IIncomingMessage message)
@@ -89,11 +90,11 @@ namespace VKBot.Controllers
             return Ok("ok");
         }
 
-        async Task<string> getRawBody()
+        string getRawBody()
         {
             using (StreamReader reader = new StreamReader(HttpContext.Request.Body, System.Text.Encoding.UTF8))
             {
-                var result = await reader.ReadToEndAsync();
+                var result = reader.ReadToEnd();
                 return result;
             }
         }
