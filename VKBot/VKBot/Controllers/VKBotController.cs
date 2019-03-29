@@ -61,6 +61,7 @@ namespace VKBot.Controllers
 
         async Task<IActionResult> ProcessMessagesAsync(IVityaBot bot, IIncomingMessage message)
         {
+            return Ok("ok");
             try
             {
                 //todo: separate interface for Task<HandlerResult>
