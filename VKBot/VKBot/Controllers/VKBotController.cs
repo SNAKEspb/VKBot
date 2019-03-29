@@ -18,11 +18,15 @@ namespace VKBot.Controllers
         {
             //new AudioMessageHandler(),
             new CommandMessageHandler(),
-            new ConfirmationHandler(),
             //new PhotoMessageHandler(),
             new TextMessageHandler(),
             new VoiceMessageHandler(),
             new WallMessageHandler(),
+        };
+
+        static List<IUpdatesHandler<IIncomingMessage>> responseHandler = new List<IUpdatesHandler<IIncomingMessage>>()
+        {
+            new ConfirmationHandler(),
         };
 
         //// GET: api/<controller>
@@ -58,7 +62,9 @@ namespace VKBot.Controllers
         {
             try
             {
-                foreach (var handler in updatesHandler)
+                //todo: separate interface for Task<HandlerResult>
+                //handle logic with response to vk
+                foreach (var handler in responseHandler)
                 {
                     if (handler.CanHandle(message, bot))
                     {
@@ -66,13 +72,19 @@ namespace VKBot.Controllers
                         return Ok(result.message);
                     }
                 }
+                //todo: separate interface for Task 
+                //handle bot requests
+                foreach (var handler in updatesHandler)
+                {
+                    if (handler.CanHandle(message, bot))
+                    {
+                        handler.HandleAsync(message, bot);
+                    }
+                }
             }
             catch (Exception ex)
             {
-                //Console.WriteLine("Error during bot process");
-                //Console.WriteLine(ex);
-                _logger.Log(NLog.LogLevel.Info, "Error during bot process");
-                _logger.Log(NLog.LogLevel.Info, ex);
+                _logger.Log(NLog.LogLevel.Error, ex, "Error during bot process");
             }
             return Ok("ok");
         }
