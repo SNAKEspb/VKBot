@@ -55,13 +55,14 @@ namespace VKBot.Controllers
         public Task<IActionResult> Post()
         {
             var message = Newtonsoft.Json.JsonConvert.DeserializeObject<UpdateMessage>(getRawBody());
+            _logger.Log(NLog.LogLevel.Info, $"Start bot process {message.text}");
             var process = ProcessMessagesAsync(bot, message);
+            _logger.Log(NLog.LogLevel.Info, $"End bot process {process}");
             return process;
         }
 
         async Task<IActionResult> ProcessMessagesAsync(IVityaBot bot, IIncomingMessage message)
         {
-            _logger.Log(NLog.LogLevel.Info, $"Start bot process {message}");
             try
             {
                 //todo: separate interface for Task<HandlerResult>

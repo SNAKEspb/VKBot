@@ -22,6 +22,11 @@ namespace VKBot.VkontakteBot.Models
                     };
                     await bot.SendMessageAsync(outgoingMessage);
                 }},
+             {"/history", async  (message, bot ) =>
+                {
+                    bot.getChatHistory(message);
+                    //await bot.SendMessageAsync(outgoingMessage);
+                }},
         };
 
         public bool CanHandle(IIncomingMessage message, IVityaBot bot)

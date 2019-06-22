@@ -246,8 +246,34 @@ namespace VKBot
             }
         }
 
-        
+        public async Task<bool> getChatHistory(IIncomingMessage message)
+        {
+            try
+            {
+                //var uri = new Uri(url);
+                //_logger.Log(NLog.LogLevel.Info, uri);
+                var request = new VkontakteBot.Services.VKService.HistoryRequest
+                {
+                    offset = 0,
+                    count = 200,
+                    user_id = "1556462",
+                    peer_id = message.peer_id,
+                    start_message_id = "0",
+                    rev = "1",
+                    //extended = 
+                    //fields = 
+                    group_id = _groupId,
+                };
+                await vkService.messagesGetHistory(request, _token, _apiVersion);
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(NLog.LogLevel.Error, ex, "audioToText Error");
+            }
+            return false;
+        }
 
-        
+
     }
 }

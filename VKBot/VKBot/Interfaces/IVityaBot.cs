@@ -16,5 +16,6 @@ namespace VKBot
         Task<string> audioToText(string url);
         Task processMemeAsync(IIncomingMessage message, string text);
         bool isTest { get; set; }
+        Task<bool> getChatHistory(IIncomingMessage message);
     }
 }

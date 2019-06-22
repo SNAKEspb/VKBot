@@ -134,7 +134,7 @@ namespace VKBot.VkontakteBot.Services
 
             var response = await _httpClient.PostAsync(urlBuilder.Uri, content);
 
-            var responseBody = response.Content.ReadAsStringAsync().Result;
+            var responseBody = await response.Content.ReadAsStringAsync();
 
             _logger.Log(NLog.LogLevel.Info, responseBody);
 
@@ -150,6 +150,52 @@ namespace VKBot.VkontakteBot.Services
             var photoSaveData = photoSaveResponse.response.FirstOrDefault();
             return $"photo{photoSaveData.owner_id}_{photoSaveData.id}_{photoSaveData.access_key}";
 
+        }
+
+        public class HistoryRequest
+        {
+            public int offset;
+            public int count;
+            public string user_id;
+            public string peer_id;
+            public string start_message_id;
+            public string rev;
+            public string extended;
+            public string fields;
+            public string group_id;
+        }
+
+        public async Task messagesGetHistory(HistoryRequest request, string token, string apiVersion)
+        {
+            var urlBuilder = new UriBuilder(_url)
+            {
+                Path = "method/messages.getHistory",
+                Query = $"access_token={token}&v={apiVersion}"
+            };
+            _logger.Log(NLog.LogLevel.Info, urlBuilder);
+
+            var values = new Dictionary<string, string>
+                {
+                    { "offset", request.offset.ToString()},
+                    { "count", request.count.ToString()},
+                    { "user_id", request.user_id },
+                    { "peer_id", request.peer_id },
+                    { "start_message_id", request.start_message_id },
+                    { "rev", request.rev },
+                    { "extended", request.extended },
+                    { "fields", request.fields },
+                    { "group_id", request.group_id },
+                };
+
+            var content = new FormUrlEncodedContent(values);
+
+            var response = await _httpClient.PostAsync(urlBuilder.Uri, content);
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            _logger.Log(NLog.LogLevel.Info, responseBody);
+
+            //return Newtonsoft.Json.JsonConvert.DeserializeObject<PhotoSaveResponse>(responseBody);
         }
     }
 }
