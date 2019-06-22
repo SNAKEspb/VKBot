@@ -17,5 +17,6 @@ namespace VKBot
         Task processMemeAsync(IIncomingMessage message, string text);
         bool isTest { get; set; }
         Task<bool> getChatHistory(IIncomingMessage message);
+        bool couldProcess(string userId);
     }
 }

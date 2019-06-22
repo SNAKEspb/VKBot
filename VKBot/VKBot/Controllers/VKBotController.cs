@@ -88,6 +88,7 @@ namespace VKBot.Controllers
             catch (Exception ex)
             {
                 _logger.Log(NLog.LogLevel.Error, ex, "Error during bot process");
+                return Ok(ex.ToString());
             }
             return Ok("ok");
         }

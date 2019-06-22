@@ -19,7 +19,8 @@ namespace VKBot.VkontakteBot.Models
 
         public bool CanHandle(IIncomingMessage message, IVityaBot bot)
         {
-            return _messageTypes.Contains(message.MessageType.ToLowerInvariant())
+            return bot.couldProcess(message.from_id)
+                && _messageTypes.Contains(message.MessageType.ToLowerInvariant())
                 && !string.IsNullOrWhiteSpace(message.text)
                 && (_userIds.Contains(message.from_id) || checkCommand(message.text));
         }

@@ -29,6 +29,11 @@ namespace VKBot
 
         static string _onlineConverterApiKey = "877a7639b9c340c976881ef851ce7a47";
 
+        static string[] _adminIds = new[]
+        {
+            "1556462"//me
+        };
+
         static List<string> _memeIds = new List<string>{
             "140165357",
             "131429347",
@@ -84,6 +89,7 @@ namespace VKBot
             imgflipService = new VkontakteBot.Services.ImgFlipService(logger);
             onlineConverterService = new VkontakteBot.Services.OnlineConverterService(logger, _onlineConverterApiKey);
             googleService = new VkontakteBot.Services.GoogleService(logger);
+            isTest = true;
             try
             {
                 //todo: post cred command
@@ -95,6 +101,11 @@ namespace VKBot
                 _logger.Log(NLog.LogLevel.Info, "VkBot Error");
                 _logger.Log(NLog.LogLevel.Info, ex);
             }
+        }
+
+        public bool couldProcess(string userId)
+        {
+            return _adminIds.Contains(userId) || !isTest;
         }
 
         public string confimationCode => _confirmationCode;

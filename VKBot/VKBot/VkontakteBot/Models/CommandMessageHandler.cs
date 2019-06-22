@@ -12,6 +12,15 @@ namespace VKBot.VkontakteBot.Models
         static string[] _messageTypes = new[] { "message_new", "message_reply" };
         static Dictionary<string, Func<IIncomingMessage, IVityaBot, Task>> _commands = new Dictionary<string, Func<IIncomingMessage, IVityaBot, Task>> ()
         {
+            {"/status", async  (message, bot ) =>
+                {
+                    var outgoingMessage = new OutgoingMessage()
+                    {
+                        peer_id = message.peer_id,
+                        message = $"bot test mode is {bot.isTest.ToString()}"
+                    };
+                    await bot.SendMessageAsync(outgoingMessage);
+                }},
             {"/test", async  (message, bot ) => 
                 {
                     bot.isTest = !bot.isTest;

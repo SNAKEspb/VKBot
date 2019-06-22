@@ -13,15 +13,19 @@ namespace VKBot.VkontakteBot.Models
         static string[] _userIds = new[]
         {
             "212515973",//vitya
-            "1556462"//me
         };
+
+        
+
         static string _wallPick = "photo-179992947_456239019";
 
         public bool CanHandle(IIncomingMessage message, IVityaBot bot)
         {
-            return _messageTypes.Contains(message.MessageType.ToLowerInvariant()) 
+            return bot.couldProcess(message.from_id)
+                &&_messageTypes.Contains(message.MessageType.ToLowerInvariant()) 
                 && _userIds.Contains(message.from_id)
-                && message.attachments != null && message.attachments.Any(x => x.type == "wall");
+                && message.attachments != null
+                && message.attachments.Any(x => x.type == "wall");
         }
         public async Task<HandlerResult> HandleAsync(IIncomingMessage message, IVityaBot bot)
         {
