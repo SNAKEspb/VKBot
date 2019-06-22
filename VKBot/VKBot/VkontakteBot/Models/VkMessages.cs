@@ -78,7 +78,7 @@ namespace VKBot.VkontakteBot.Models
         public string MessageType => type;
         public string from_id => @object.from_id.ToString();
 
-        public string text => @object.text;
+        public string text => @object != null ? @object.text : null;
         public List<dynamic> attachments => @object.attachments;
     }
 
