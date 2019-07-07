@@ -15,8 +15,10 @@ namespace VKBot
         //сюда добавить методы заливания аттачей? картинок / аудио или хуйнують логику прямо в сенд мессаж
         Task<string> audioToText(string url);
         Task processMemeAsync(IIncomingMessage message, string text);
-        bool isTest { get; set; }
+        Task processMemeByIdAsync(IIncomingMessage message, string memeId, string text);
+        VKBot.VkBot.Mode mode { get; set; }
         Task<bool> getChatHistory(IIncomingMessage message);
-        bool couldProcess(string userId);
+        bool canProcess(string userId);
+        Task processTextMessage(IIncomingMessage message);
     }
 }

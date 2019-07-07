@@ -43,6 +43,12 @@ namespace VKBot
 
             app.UseHttpsRedirection();
             app.UseMvc();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "VkAuth",
+                    template: "{controller=VkUserApi}/{action=Index}");
+            });
         }
     }
 }

@@ -16,6 +16,7 @@ namespace VKBot
     {
         public static void Main(string[] args)
         {
+            
             // NLog: setup the logger first to catch all errors
             var logger = NLog.Web.NLogBuilder.ConfigureNLog("NLog.config").GetCurrentClassLogger();
             try
@@ -23,6 +24,8 @@ namespace VKBot
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 logger.Debug("init main");
                 CreateWebHostBuilder(args).Build().Run();
+                //init bot and services
+                VKBot.VkBot.getinstanse(logger);
             }
             catch (Exception ex)
             {

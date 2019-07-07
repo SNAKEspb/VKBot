@@ -5,6 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using VKBot.VkontakteBot.Models;
+using VKBot.Common;
+using System.Runtime.Caching;
+
 
 namespace VKBot.Controllers
 {
@@ -17,7 +20,7 @@ namespace VKBot.Controllers
         static List<IUpdatesHandler<IIncomingMessage>> updatesHandler = new List<IUpdatesHandler<IIncomingMessage>>()
         {
             //new AudioMessageHandler(),
-            new CommandMessageHandler(),
+            //new CommandMessageHandler(),
             //new PhotoMessageHandler(),
             new TextMessageHandler(),
             new VoiceMessageHandler(),
@@ -28,20 +31,6 @@ namespace VKBot.Controllers
         {
             new ConfirmationHandler(),
         };
-
-        //// GET: api/<controller>
-        //[HttpGet]
-        //public IEnumerable<string> Get()
-        //{
-        //    return new string[] { "value1", "value2" };
-        //}
-
-        //// GET api/<controller>/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
 
         // GET: api/<controller>
         [HttpGet]
@@ -54,7 +43,7 @@ namespace VKBot.Controllers
         [HttpPost]
         public Task<IActionResult> Post()
         {
-            var message = Newtonsoft.Json.JsonConvert.DeserializeObject<UpdateMessage>(getRawBody());
+            var message = Newtonsoft.Json.JsonConvert.DeserializeObject<UpdateMessage>(Util.getRawBody(HttpContext.Request.Body));
             _logger.Log(NLog.LogLevel.Info, $"Start bot process {message.text}");
             var process = ProcessMessagesAsync(bot, message);
             _logger.Log(NLog.LogLevel.Info, $"End bot process {process}");
@@ -65,6 +54,16 @@ namespace VKBot.Controllers
         {
             try
             {
+                //check chache
+                //if cache already contains the message, then return ok result, else proceed
+                ObjectCache cache = MemoryCache.Default;
+                var cacheKey = message.peer_id + message.MessageType + message.from_id + message.date;
+                if (cache[cacheKey] != null)
+                {
+                    _logger.Log(NLog.LogLevel.Info, $"cache key found: {cacheKey}");
+                    return Ok("ok");
+                }
+                cache.Add(cacheKey, message, DateTime.Now.AddMinutes(5));
                 //todo: separate interface for Task<HandlerResult>
                 //handle logic with response to vk
                 foreach (var handler in responseHandler)

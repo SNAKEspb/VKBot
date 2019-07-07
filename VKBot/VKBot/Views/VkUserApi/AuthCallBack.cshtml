@@ -1,0 +1,18 @@
+﻿
+@{
+    ViewData["Title"] = "Auth";
+}
+<script>
+
+</script>
+<script type="text/javascript">
+
+    window.onload = load();
+
+    function load() {
+        window.location.href = ("/vkuserapi/AuthConfirm" + window.location.hash.replace("#","?"));
+    }
+
+</script>
+<h1>Auth</h1>
+

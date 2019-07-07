@@ -18,7 +18,7 @@ namespace VKBot.Controllers
         {
             try
             {
-                var message = await getRawBody();
+                var message = await Common.Util.getRawBodyAsync(HttpContext.Request.Body);
                 System.IO.File.WriteAllText("key.json", message);
                 System.Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "key.json");
                 return Ok("ok");

@@ -74,9 +74,10 @@ namespace VKBot.VkontakteBot.Models
         public UpdateMessageData @object { get; set; }
         public int group_id { get; set; }
 
-        public string peer_id => @object.peer_id.ToString();
+        public string peer_id => @object != null ? @object.peer_id.ToString() : null;
         public string MessageType => type;
-        public string from_id => @object.from_id.ToString();
+        public string from_id => @object != null ? @object.from_id.ToString() : null;
+        public string date => @object != null ? @object.date.ToString() : null;//DateTime.Now.ToString();
 
         public string text => @object != null ? @object.text : null;
         public List<dynamic> attachments => @object.attachments;

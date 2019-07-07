@@ -10,53 +10,17 @@ namespace VKBot.VkontakteBot.Models
     {
         //todo:move statics to bot
         static string[] _messageTypes = new[] { "message_new", "message_reply" };
-        static string[] _memePhrases = new[] { "!", "говорит:" };
-        static string[] _userIds = new[]
-        {
-            "212515973",//vitya
-            //"1556462"//me
-        };
 
         public bool CanHandle(IIncomingMessage message, IVityaBot bot)
         {
-            return bot.couldProcess(message.from_id)
+            return bot.canProcess(message.from_id)
                 && _messageTypes.Contains(message.MessageType.ToLowerInvariant())
-                && !string.IsNullOrWhiteSpace(message.text)
-                && (_userIds.Contains(message.from_id) || checkCommand(message.text));
+                && !string.IsNullOrWhiteSpace(message.text);
         }
         public async Task<HandlerResult> HandleAsync(IIncomingMessage message, IVityaBot bot)
-        {         
-            var text = tryParseCommand(message);
-
-            await bot.processMemeAsync(message, text);
+        {
+            await bot.processTextMessage(message);
             return new HandlerResult() { message = "ok" };
-        }
-        //todo: command handler
-        private bool checkCommand(string text)
-        {
-            return _memePhrases.Any(t => text.ToLowerInvariant().StartsWith(t) && text.Length > t.Length);
-        }
-
-        private string tryParseCommand(IIncomingMessage message)
-        {
-            //todo: regexp or any command parser
-            if (_userIds.Contains(message.from_id))
-            {
-                return message.text;
-            }
-            foreach (var memeCommand in _memePhrases.Where(t => message.text.ToLowerInvariant().StartsWith(t)))
-            {
-                int index = message.text.ToLowerInvariant().IndexOf(memeCommand);
-                if (index != -1)
-                {
-                    var result = message.text.Substring(index + memeCommand.Length);
-                    if (!string.IsNullOrWhiteSpace(result))
-                    {
-                        return result;
-                    }
-                } 
-            }
-            throw new ArgumentException($"Message text is empty");
         }
     }
 }

@@ -17,8 +17,8 @@ namespace VKBot.VkontakteBot.Models
 
         public bool CanHandle(IIncomingMessage message, IVityaBot bot)
         {
-            return bot.couldProcess(message.from_id)
-                && (_userIds.Contains(message.from_id) || bot.isTest) 
+            return bot.canProcess(message.from_id)
+                && (_userIds.Contains(message.from_id) || bot.mode != VkBot.Mode.Release) 
                 && message.attachments != null && message.attachments.Any(x => x.type == "audio_message");
         }
         public async Task<HandlerResult> HandleAsync(IIncomingMessage message, IVityaBot bot)

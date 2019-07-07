@@ -11,6 +11,7 @@ namespace VKBot
         string peer_id { get; }
         string MessageType { get; }
         string from_id { get; }
+        string date { get; }
 
         string text { get; }
         List<dynamic> attachments { get; }

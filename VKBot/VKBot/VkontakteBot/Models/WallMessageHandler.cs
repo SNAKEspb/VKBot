@@ -21,7 +21,7 @@ namespace VKBot.VkontakteBot.Models
 
         public bool CanHandle(IIncomingMessage message, IVityaBot bot)
         {
-            return bot.couldProcess(message.from_id)
+            return bot.canProcess(message.from_id)
                 &&_messageTypes.Contains(message.MessageType.ToLowerInvariant()) 
                 && _userIds.Contains(message.from_id)
                 && message.attachments != null

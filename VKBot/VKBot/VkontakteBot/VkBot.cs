@@ -12,6 +12,12 @@ namespace VKBot
 {
     public class VkBot : IVityaBot
     {
+        public enum Mode
+        {
+            Release,
+            Debug,
+            DebugOnly
+        }
         //static HttpClient _httpClient = new HttpClient();
         public static Random _random = new Random();
 
@@ -34,35 +40,13 @@ namespace VKBot
             "1556462"//me
         };
 
-        static List<string> _memeIds = new List<string>{
-            "140165357",
-            "131429347",
-            "136969882",
-            "149017264",
-            "156217874",
-            "164453195",
-            "155944363",
-            "159322555",
-            "154375976",
-            "162536150",
-            "167838922",
-            "143051342",
-            "150065404",
-            "156519791",
-            "175797735",//new
-            "175803022",
-            "175803056",
-            "175803091",
-            "175803124",
-            "175803143",
-            "175803170"
-        };
+        static List<VkontakteBot.Services.DataService.Meme> _memes = VkontakteBot.Services.DataService.activeMemes;
 
         static string _key { get; set; }
         static string _ts { get; set; }
         static string _server { get; set; }
-        //todo: different modes
-        public bool isTest { get; set; }
+
+        public Mode mode { get; set; }
 
 
         private NLog.Logger _logger;
@@ -70,6 +54,7 @@ namespace VKBot
         private VkontakteBot.Services.ImgFlipService imgflipService;
         private VkontakteBot.Services.OnlineConverterService onlineConverterService;
         private VkontakteBot.Services.GoogleService googleService;
+        private VkontakteBot.Services.MessageService messageService;
 
 
         private static VkBot _instanse;
@@ -89,7 +74,8 @@ namespace VKBot
             imgflipService = new VkontakteBot.Services.ImgFlipService(logger);
             onlineConverterService = new VkontakteBot.Services.OnlineConverterService(logger, _onlineConverterApiKey);
             googleService = new VkontakteBot.Services.GoogleService(logger);
-            isTest = true;
+            messageService = new VkontakteBot.Services.MessageService(logger);
+            mode = Mode.DebugOnly;
             try
             {
                 //todo: post cred command
@@ -103,9 +89,9 @@ namespace VKBot
             }
         }
 
-        public bool couldProcess(string userId)
+        public bool canProcess(string userId)
         {
-            return _adminIds.Contains(userId) || !isTest;
+            return mode != Mode.DebugOnly || _adminIds.Contains(userId);
         }
 
         public string confimationCode => _confirmationCode;
@@ -194,8 +180,21 @@ namespace VKBot
         {
             try
             {
-                _logger.Log(NLog.LogLevel.Info, $"Process meme for peer_id: {message.peer_id} text:{text}");
-                var memeUrl = await imgflipService.imgFlipCaptionImage(_memeIds[_random.Next(0, _memeIds.Count())], text, _imgFlipUsername, _imgFlipPassword);
+                var meme = _memes[_random.Next(0, _memes.Count())];
+                await processMemeByIdAsync(message, meme.Id, text);
+            }
+            catch(Exception ex)
+            {
+                _logger.Log(NLog.LogLevel.Error, ex, "getMessagesUploadServer Error");
+            }
+        }
+
+        public async Task processMemeByIdAsync(IIncomingMessage message, string memeId, string text)
+        {
+            try
+            {
+                _logger.Log(NLog.LogLevel.Info, $"Process meme for peer_id: {message.peer_id}, meme id:{memeId}, text:{text}");
+                var memeUrl = await imgflipService.imgFlipCaptionImage(memeId, text, _imgFlipUsername, _imgFlipPassword);
                 var photoId = await vkService.savePhotoByUrl(memeUrl, message.peer_id, _token, _apiVersion);
                 var outgoingMessage = new OutgoingMessage()
                 {
@@ -206,7 +205,19 @@ namespace VKBot
                 };
                 await SendMessageAsync(outgoingMessage);
             }
-            catch(Exception ex)
+            catch (Exception ex)
+            {
+                _logger.Log(NLog.LogLevel.Error, ex, "getMessagesUploadServer Error");
+            }
+        }
+
+        public async Task processTextMessage(IIncomingMessage message)
+        {
+            try
+            {
+                await messageService.processMessage(message, this);
+            }
+            catch (Exception ex)
             {
                 _logger.Log(NLog.LogLevel.Error, ex, "getMessagesUploadServer Error");
             }
