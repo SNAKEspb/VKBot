@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
 using System.Text;
+using SwearWordGenerator;
 
 namespace VKBot
 {
@@ -16,7 +17,7 @@ namespace VKBot
     {
         public static void Main(string[] args)
         {
-            
+            var result = Generator.generate(SwearWordGenerator.Type.Adjective, 2, Sex.M, Case.I);
             // NLog: setup the logger first to catch all errors
             var logger = NLog.Web.NLogBuilder.ConfigureNLog("NLog.config").GetCurrentClassLogger();
             try

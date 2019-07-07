@@ -20,7 +20,7 @@ namespace SwearWordGenerator
             result.Append(getPrefix(amount));
             //generate root
             var words = Vocabulary.words[type][sex];
-            result.Append(rand.Next(0, words.Count()));
+            result.Append(words.ElementAt<Vocabulary.Word>(rand.Next(0, words.Count())).getWord(wordCase));
 
             return result.ToString();
         }
