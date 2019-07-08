@@ -35,11 +35,6 @@ namespace VKBot
 
         static string _onlineConverterApiKey = "877a7639b9c340c976881ef851ce7a47";
 
-        static string[] _adminIds = new[]
-        {
-            "1556462"//me
-        };
-
         static List<VkontakteBot.Services.DataService.Meme> _memes = VkontakteBot.Services.DataService.activeMemes;
 
         static string _key { get; set; }
@@ -91,7 +86,7 @@ namespace VKBot
 
         public bool canProcess(string userId)
         {
-            return mode != Mode.DebugOnly || _adminIds.Contains(userId);
+            return mode != Mode.DebugOnly || VkontakteBot.Services.DataService.adminsIds.Contains(userId);
         }
 
         public string confimationCode => _confirmationCode;

@@ -8,17 +8,12 @@ namespace VKBot.VkontakteBot.Models
 {
     public class VoiceMessageHandler : IUpdatesHandler<IIncomingMessage>
     {
-        //todo:move statics to bot
-        static string[] _userIds = new[]
-        {
-            "212515973",//vitya
-        };
         static string _symbols = "АБВЛ ";
 
         public bool CanHandle(IIncomingMessage message, IVityaBot bot)
         {
             return bot.canProcess(message.from_id)
-                && (_userIds.Contains(message.from_id) || bot.mode != VkBot.Mode.Release) 
+                && (Services.DataService.vityaId == message.from_id || bot.mode != VkBot.Mode.Release) 
                 && message.attachments != null && message.attachments.Any(x => x.type == "audio_message");
         }
         public async Task<HandlerResult> HandleAsync(IIncomingMessage message, IVityaBot bot)

@@ -10,20 +10,12 @@ namespace VKBot.VkontakteBot.Models
     {
         //todo:move statics to bot
         static string[] _messageTypes = new[] { "message_new", "message_reply" };
-        static string[] _userIds = new[]
-        {
-            "212515973",//vitya
-        };
-
-        
-
-        static string _wallPick = "photo-179992947_456239019";
 
         public bool CanHandle(IIncomingMessage message, IVityaBot bot)
         {
             return bot.canProcess(message.from_id)
                 &&_messageTypes.Contains(message.MessageType.ToLowerInvariant()) 
-                && _userIds.Contains(message.from_id)
+                && Services.DataService.vityaId == message.from_id
                 && message.attachments != null
                 && message.attachments.Any(x => x.type == "wall");
         }
@@ -33,7 +25,7 @@ namespace VKBot.VkontakteBot.Models
             {
                 peer_id = message.peer_id,
                 //message = text,
-                attachment = _wallPick,
+                attachment = Services.DataService.pictures["communityLike"],
                 //group_id = message.
             };
             await bot.SendMessageAsync(outgoingMessage);
