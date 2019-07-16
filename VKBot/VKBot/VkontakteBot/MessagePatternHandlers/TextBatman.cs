@@ -16,7 +16,7 @@ namespace VKBot.VkontakteBot.MessagePatternHandlers
             var outgoingMessage = new Models.OutgoingMessage()
             {
                 peer_id = message.peer_id,
-                message = $"Бетмен {Generator.generate(SwearWordGenerator.Type.Adjective, 2, Sex.M, Case.I)} {Generator.generate(SwearWordGenerator.Type.Noun, 2, Sex.M, Case.I)}"
+                message = $"Бэтмен {Generator.generate(SwearWordGenerator.Type.Adjective, 2, Sex.M, Case.I)} {Generator.generate(SwearWordGenerator.Type.Noun, 2, Sex.M, Case.I)}"
             };
             await bot.SendMessageAsync(outgoingMessage);
         }

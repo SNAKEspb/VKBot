@@ -40,7 +40,7 @@ namespace VKBot.VkontakteBot.Services
             new MessagePatternHandlers.CommandTestMemeById(@"^\/test\s*memeid\s*(.*)", 10, 4),
             new MessagePatternHandlers.CommandTestMemes(@"^\/test\s*memes", 10,  4),
             new MessagePatternHandlers.TextAny(@".*", 9, 2, new List<string>(){ DataService.vityaId}),
-            new MessagePatternHandlers.TextBatman(@"бетмен", 9, 0),
+            new MessagePatternHandlers.TextBatman(@"б[еэ]тм[ае]н|b[ae]tm[ae]n", 9, 0),
             new MessagePatternHandlers.TextBot(@"(^|\.|\,|\s)бот(\w{0,2})?", 9, 0),
             new MessagePatternHandlers.TextHttp(@"^http", 10, 0),
             new MessagePatternHandlers.TextJoke(@"((?:заеб|залуп|говн|плох|хуй|хуе).*шутк[a|и]?)|((?:^)?шутк[a|и]?.*(?:заеб|залуп|говн|плох|хуй|хуе|заеб))|(шутит|шутишь|шутканул|пошутил)", 9, 0),
