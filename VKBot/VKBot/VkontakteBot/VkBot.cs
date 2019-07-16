@@ -176,7 +176,7 @@ namespace VKBot
             try
             {
                 var meme = _memes[_random.Next(0, _memes.Count())];
-                await processMemeByIdAsync(message, meme.Id, text);
+                await processMemeByIdAsync(message.peer_id, meme.Id, text);
             }
             catch(Exception ex)
             {
@@ -184,16 +184,16 @@ namespace VKBot
             }
         }
 
-        public async Task processMemeByIdAsync(IIncomingMessage message, string memeId, string text)
+        public async Task processMemeByIdAsync(string peerId, string memeId, string text)
         {
             try
             {
-                _logger.Log(NLog.LogLevel.Info, $"Process meme for peer_id: {message.peer_id}, meme id:{memeId}, text:{text}");
+                _logger.Log(NLog.LogLevel.Info, $"Process meme for peer_id: {peerId}, meme id:{memeId}, text:{text}");
                 var memeUrl = await imgflipService.imgFlipCaptionImage(memeId, text, _imgFlipUsername, _imgFlipPassword);
-                var photoId = await vkService.savePhotoByUrl(memeUrl, message.peer_id, _token, _apiVersion);
+                var photoId = await vkService.savePhotoByUrl(memeUrl, peerId, _token, _apiVersion);
                 var outgoingMessage = new OutgoingMessage()
                 {
-                    peer_id = message.peer_id,
+                    peer_id = peerId,
                     //message = text,
                     attachment = photoId,
                     //group_id = message.
@@ -263,6 +263,53 @@ namespace VKBot
             }
         }
 
+        public async Task processBestMemeAsync(IIncomingMessage message, GetMemesMemes bestMeme, List<string> memeText)
+        {
+            try
+            {
+                _logger.Log(NLog.LogLevel.Info, $"processBestMemeAsync for peer_id: {message.peer_id}");
+                
+
+                var memeUrl = await imgflipService.imgFlipCaptionImage(bestMeme.id, memeText, _imgFlipUsername, _imgFlipPassword);
+                var photoId = await vkService.savePhotoByUrl(memeUrl, message.peer_id, _token, _apiVersion);
+                var outgoingMessage = new OutgoingMessage()
+                {
+                    peer_id = message.peer_id,
+                    //message = text,
+                    attachment = photoId,
+                    //group_id = message.
+                };
+                await SendMessageAsync(outgoingMessage);
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(NLog.LogLevel.Error, ex, "getMessagesUploadServer Error");
+            }
+        }
+
+        public async Task processRandomBestMemeAsync(IIncomingMessage message)
+        {
+            try
+            {
+                _logger.Log(NLog.LogLevel.Info, $"processRandomBestMemeAsync for peer_id: {message.peer_id}");
+                var bestMemes = await imgflipService.bestMemes(_imgFlipUsername, _imgFlipPassword);
+                var randomMeme = bestMemes[_random.Next(0, bestMemes.Count)];
+
+                var randomMessages = new List<string>();
+                for (int i = 0; i < int.Parse(randomMeme.box_count); i++)
+                {
+                    randomMessages.Add(VkontakteBot.Services.DataService.vityaMessages[_random.Next(0, VkontakteBot.Services.DataService.vityaMessages.Count)]);
+                }
+
+                await processBestMemeAsync(message, randomMeme, randomMessages);
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(NLog.LogLevel.Error, ex, "getMessagesUploadServer Error");
+            }
+        }
+
+        [Obsolete("no need")]
         public async Task<bool> getChatHistory(IIncomingMessage message)
         {
             try
@@ -282,7 +329,7 @@ namespace VKBot
                     group_id = _groupId,
                 };
                 await vkService.messagesGetHistory(request, _token, _apiVersion);
-                
+
             }
             catch (Exception ex)
             {

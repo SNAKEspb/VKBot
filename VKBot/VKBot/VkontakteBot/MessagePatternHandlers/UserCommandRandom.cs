@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace VKBot.VkontakteBot.MessagePatternHandlers
 {
-    public class UserCommandMeme : Models.MessagePatternHandler
+    public class UserCommandRandom : Models.MessagePatternHandler
     {
-        public UserCommandMeme(string pattern, int priority, byte access, List<string> userIds = null) : base(pattern, priority, access, userIds) { }
+        public UserCommandRandom(string pattern, int priority, byte access, List<string> userIds = null) : base(pattern, priority, access, userIds) { }
 
         public override async Task handleAsync(IIncomingMessage message, IVityaBot bot, Match match)
         {
-            await bot.processRandomBestMemeAsync(message);
+            await bot.processMemeAsync(message, match.Groups[1].Value);
         }
     }
 }

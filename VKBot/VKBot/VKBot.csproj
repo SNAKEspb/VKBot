@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SwearWordGenerator\SwearWordGenerator.csproj" />
+    <ProjectReference Include="..\VkHistoryParser\VkHistoryParser.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,6 +32,9 @@
 
   <ItemGroup>
     <None Update="memes.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VityaMessages.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

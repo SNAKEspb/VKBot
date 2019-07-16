@@ -12,6 +12,7 @@ namespace VKBot.VkontakteBot.Services
         static string _url { get; set; } = "https://api.imgflip.com/";
         static HttpClient _httpClient = new HttpClient();
         private NLog.Logger _logger;
+        public List<GetMemesMemes> _bestMemes;
 
         public ImgFlipService(NLog.Logger logger)
         {
@@ -20,10 +21,10 @@ namespace VKBot.VkontakteBot.Services
 
         public async Task<string> imgFlipCaptionImage(string id, string text, string username, string password)
         {
-            return await imgFlipCaptionImage(id, new string[] { text }, username, password);
+            return await imgFlipCaptionImage(id, new List<string>() { text }, username, password);
         }
 
-        public async Task<string> imgFlipCaptionImage(string id, string[] text, string username, string password)
+        public async Task<string> imgFlipCaptionImage(string id, List<string> text, string username, string password)
         {
             var urlBuilder = new UriBuilder(_url)
             {
@@ -38,14 +39,14 @@ namespace VKBot.VkontakteBot.Services
                 { "text0", text[0] },
             };
 
-            if (text.Length > 2)
+            if (text.Count > 2)
             {
-                for (int i = 0; i < text.Length; i++)
+                for (int i = 0; i < text.Count; i++)
                 {
                     values.Add($"boxes[{i}][text]", text[i]);
                 }
             }
-            else if (text.Length > 1)
+            else if (text.Count > 1)
             {
                 values.Add("text1", text[1]);
             }
@@ -82,6 +83,15 @@ namespace VKBot.VkontakteBot.Services
                 return result.data.memes;
             }
             throw new Exception($"Imgflip error:{result.error_message}");
+        }
+
+        public async Task<List<GetMemesMemes>> bestMemes(string username, string password)
+        {
+            if (_bestMemes == null)
+            {
+                _bestMemes = await imgFlipGetMemes(username, password);
+            }
+            return _bestMemes;
         }
     }
 }

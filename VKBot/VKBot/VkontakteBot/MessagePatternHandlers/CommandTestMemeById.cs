@@ -17,7 +17,7 @@ namespace VKBot.VkontakteBot.MessagePatternHandlers
             var meme = memes.FirstOrDefault(t => t.Id == memeId);
             if (meme != null)
             {
-                await bot.processMemeByIdAsync(message, meme.Id, meme.title + ";" + meme.description);
+                await bot.processMemeByIdAsync(message.peer_id, meme.Id, meme.title + ";" + meme.description);
             }
             var outgoingMessage = new Models.OutgoingMessage()
             {

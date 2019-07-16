@@ -23,6 +23,7 @@ namespace VKBot.VkontakteBot.Services
         }
 
         public static string memeFile = "memes.txt";
+        public static string vityaMessagesFile = "VityaMessages.txt";
         public static List<Meme> activeMemes = loadActiveMeme();
         public static List<Meme> loadActiveMeme()
         {
@@ -33,6 +34,14 @@ namespace VKBot.VkontakteBot.Services
                     return new Meme() { Id = values[0], isActive = int.Parse(values[1]) == 1, title = values[2], description = (values.Length > 3 ? values[3] : "") };
                 })
                 .Where(t => t.isActive)
+                .ToList();
+
+        }
+        public static List<string> vityaMessages = loadVityaMessages();
+        public static List<string> loadVityaMessages()
+        {
+            return File.ReadAllLines(vityaMessagesFile, System.Text.Encoding.GetEncoding(1251))
+                .Where(t => !string.IsNullOrWhiteSpace(t))
                 .ToList();
 
         }
@@ -48,6 +57,7 @@ namespace VKBot.VkontakteBot.Services
         {
             new User(){ name = "Vitya", id = vityaId, access = 2},
             new User(){ name = "me", id = "1556462", access = 4},
+            new User(){ name = "sanya", id = "1500589", access = 4},
         };
 
         public static List<string> adminsIds => users.Where(t => t.access == 4).Select(t => t.id).ToList();
@@ -58,5 +68,11 @@ namespace VKBot.VkontakteBot.Services
         {
             return users.Where(t => t.id == id).Select(t => t.access).FirstOrDefault();
         }
+
+        public static Dictionary<string, string> peers = new Dictionary<string, string>()
+        {
+            { "2000000001", "test group" },
+            { "2000000002", "main group"},
+        };
     }
 }
