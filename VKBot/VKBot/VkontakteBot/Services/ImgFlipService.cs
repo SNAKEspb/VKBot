@@ -36,19 +36,19 @@ namespace VKBot.VkontakteBot.Services
                 { "template_id",  id},
                 { "username", username },
                 { "password", password },
-                { "text0", text[0] },
+                { "text0", text[0].ToUpper() },
             };
 
             if (text.Count > 2)
             {
                 for (int i = 0; i < text.Count; i++)
                 {
-                    values.Add($"boxes[{i}][text]", text[i]);
+                    values.Add($"boxes[{i}][text]", text[i].ToUpper());
                 }
             }
             else if (text.Count > 1)
             {
-                values.Add("text1", text[1]);
+                values.Add("text1", text[1].ToUpper());
             }
 
             var content = new FormUrlEncodedContent(values);

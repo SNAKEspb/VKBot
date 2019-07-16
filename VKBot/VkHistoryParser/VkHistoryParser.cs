@@ -16,7 +16,7 @@ namespace VkHistoryParser
 
             var files = Directory.GetFiles(directoryPath);
 
-            var regex = new Regex(@"(\&\#\d*;)|(http.*)");//to remove smiles and links
+            var regex = new Regex(@"(\&\#\d*;)|(http.*)|Посмотрите,.*");//to remove smiles, links and other stuff
             
             var messages = files.Select(t =>
                 {
@@ -32,9 +32,9 @@ namespace VkHistoryParser
                     .Select(t => t.InnerText)
                     .Where(t => !string.IsNullOrWhiteSpace(t))
                     .Select(t => t.Trim())
-                    .Where(t => !t.StartsWith("http") || !t.StartsWith("Посмотрите,"))
                     .Select(t => t.Replace("\n", ""))
                     .Select(t => regex.Replace(t, " "))
+                    .Where(t => !t.StartsWith("http") || !t.StartsWith("Посмотрите,"))// do not work D:
                     .Where(t => !string.IsNullOrWhiteSpace(t))
                 );
             File.AppendAllLines("VityaMessages.txt", messages, encrus);
