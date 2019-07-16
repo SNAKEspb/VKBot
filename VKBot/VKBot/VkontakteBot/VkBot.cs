@@ -70,7 +70,7 @@ namespace VKBot
             onlineConverterService = new VkontakteBot.Services.OnlineConverterService(logger, _onlineConverterApiKey);
             googleService = new VkontakteBot.Services.GoogleService(logger);
             messageService = new VkontakteBot.Services.MessageService(logger);
-            mode = Mode.DebugOnly;
+            mode = Mode.Release;
             try
             {
                 //todo: post cred command
