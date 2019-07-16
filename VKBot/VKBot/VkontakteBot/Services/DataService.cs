@@ -67,7 +67,7 @@ namespace VKBot.VkontakteBot.Services
         public static int userAccess(string id)
         {
             var access = users.Where(t => t.id == id).Select(t => t.access).FirstOrDefault();
-            return access == 0 ? 1 : 0;
+            return access == 0 ? 1 : access;
         }
 
         public static Dictionary<string, string> peers = new Dictionary<string, string>()
