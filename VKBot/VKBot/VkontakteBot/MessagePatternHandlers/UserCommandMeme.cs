@@ -12,7 +12,7 @@ namespace VKBot.VkontakteBot.MessagePatternHandlers
 
         public override async Task handleAsync(IIncomingMessage message, IVityaBot bot, Match match)
         {
-            await bot.processRandomBestMemeAsync(message);
+            await bot.processMemeAsync(message, match.Groups[1].Value);
         }
     }
 }

@@ -43,6 +43,7 @@ namespace VKBot.VkontakteBot.Models
         public MessagePatternHandler(string pattern, int priority, byte access, List<string> userIds = null)
         {
             this.pattern = pattern;
+            this.priority = priority;
             this.regex = new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Multiline);
             this.access = access;
             this.userIds = userIds ?? new List<string>();
