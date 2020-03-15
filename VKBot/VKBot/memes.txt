@@ -43,3 +43,6 @@
 189993310;1;Brainlet-microbrain;
 189992948;1;Brainlet-wojak-constructor;
 189992508;1;Brainlet-Wojak-Dumb;
+197607576;1;zheka;drinking
+197607727;1;zheka---disgust
+197607817;1;zheka---magic
