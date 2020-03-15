@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -50,6 +51,7 @@ namespace VKBot
         private VkontakteBot.Services.OnlineConverterService onlineConverterService;
         private VkontakteBot.Services.GoogleService googleService;
         private VkontakteBot.Services.MessageService messageService;
+        private VkontakteBot.Services.ImageService imageService;
 
 
         private static VkBot _instanse;
@@ -70,6 +72,7 @@ namespace VKBot
             onlineConverterService = new VkontakteBot.Services.OnlineConverterService(logger, _onlineConverterApiKey);
             googleService = new VkontakteBot.Services.GoogleService(logger);
             messageService = new VkontakteBot.Services.MessageService(logger);
+            imageService = new VkontakteBot.Services.ImageService(logger);
             mode = Mode.Release;
             try
             {
@@ -336,6 +339,48 @@ namespace VKBot
                 _logger.Log(NLog.LogLevel.Error, ex, "audioToText Error");
             }
             return false;
+        }
+
+        public async Task processPhoto(IIncomingMessage message)
+        {
+            try
+            {
+                var photo = message.attachments.Select(t => t.photo.sizes.FirstOrDefault(size => size.type == "w")).FirstOrDefault();
+                var url = photo.url;
+
+                var uploadRegisterResponse = await vkService.photosGetMessagesUploadServerAsync(message.peer_id, _token, _apiVersion);
+                //mb upload_url should be stored
+
+                using (WebClient client = new WebClient())
+                {
+                    byte[] photoBytes = await client.DownloadDataTaskAsync(url);
+
+                    var text = VkontakteBot.Services.DataService.vityaShortMessages[_random.Next(0, VkontakteBot.Services.DataService.vityaShortMessages.Count)];
+
+                    var newPhotoBytes = imageService.addTextToImage(photoBytes, text);
+
+                    var photoUploadResponse = await vkService.uploadPictureAsync(uploadRegisterResponse.response.upload_url, message.peer_id, System.IO.Path.GetFileName(url), newPhotoBytes);
+                    var photoSaveResponse = await vkService.photosSaveMessagesPhotoAsync(photoUploadResponse, _token, _apiVersion);
+                    var photoSaveData = photoSaveResponse.response.FirstOrDefault();
+
+                    var photoId = $"photo{photoSaveData.owner_id}_{photoSaveData.id}_{photoSaveData.access_key}";
+
+                    var outgoingMessage = new OutgoingMessage()
+                    {
+                        peer_id = message.peer_id,
+                        //message = text,
+                        attachment = photoId,
+                        //group_id = message.
+                    };
+                    await SendMessageAsync(outgoingMessage);
+                }
+
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(NLog.LogLevel.Error, ex, "audioToText Error");
+            }
         }
 
 

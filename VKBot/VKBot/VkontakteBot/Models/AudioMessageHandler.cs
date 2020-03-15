@@ -14,10 +14,10 @@ namespace VKBot.VkontakteBot.Models
         }
         public async Task<HandlerResult> HandleAsync(IIncomingMessage message, IVityaBot bot)
         {
-            foreach (var attach in message.attachments.Where(x => x.type == "audio"))
-            {
-                await bot.SendMessageAsync(new OutgoingMessage() { peer_id = message.peer_id, message = string.Format("{0} говно", attach.audio.artist) });
-            }
+            //foreach (var attach in message.attachments.Where(x => x.type == "audio"))
+            //{
+            //    await bot.SendMessageAsync(new OutgoingMessage() { peer_id = message.peer_id, message = string.Format("{0} говно", attach.audio.artist) });
+            //}
 
             return new HandlerResult() { message = "ok" };
         }

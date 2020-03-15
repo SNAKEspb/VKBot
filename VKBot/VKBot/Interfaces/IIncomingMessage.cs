@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VKBot.VkontakteBot.Models;
 
 namespace VKBot
 {
@@ -14,7 +15,7 @@ namespace VKBot
         string date { get; }
 
         string text { get; }
-        List<dynamic> attachments { get; }
+        List<Attachment> attachments { get; }
 
     }
   

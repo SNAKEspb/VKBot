@@ -21,7 +21,7 @@ namespace VKBot.Controllers
         {
             //new AudioMessageHandler(),
             //new CommandMessageHandler(),
-            //new PhotoMessageHandler(),
+            new PhotoMessageHandler(),
             new TextMessageHandler(),
             new VoiceMessageHandler(),
             new WallMessageHandler(),

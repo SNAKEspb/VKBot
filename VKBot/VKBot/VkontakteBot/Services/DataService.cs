@@ -46,6 +46,8 @@ namespace VKBot.VkontakteBot.Services
 
         }
 
+        public static List<string> vityaShortMessages { get; set; } = vityaMessages.Where(t => t.Length > 10 && t.Length < 30).GroupBy(t => t).Select(t => t.First()).ToList();
+
         public static Dictionary<string, string> pictures = new Dictionary<string, string>()
         {
             { "communityLike", "photo-179992947_456239019" },

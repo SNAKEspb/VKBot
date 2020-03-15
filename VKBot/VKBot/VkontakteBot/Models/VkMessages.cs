@@ -39,10 +39,18 @@ namespace VKBot.VkontakteBot.Models
         public string id;
         public int album_id;
         public int owner_id;
-        public object[] sizes;
+        public PhotoSize[] sizes;
         public string text;
         public int date;
         public string access_key;
+    }
+
+    public class PhotoSize
+    {
+        public string type;
+        public string url;
+        public int width;
+        public int height;
     }
 
     public class UpdateMessageDataAction
@@ -64,7 +72,7 @@ namespace VKBot.VkontakteBot.Models
         public List<object> fwd_messages { get; set; }
         public bool important { get; set; }
         public int random_id { get; set; }
-        public List<object> attachments { get; set; }
+        public List<Attachment> attachments { get; set; }
         public bool is_hidden { get; set; }
     }
 
@@ -80,8 +88,13 @@ namespace VKBot.VkontakteBot.Models
         public string date => @object != null ? @object.date.ToString() : null;//DateTime.Now.ToString();
 
         public string text => @object != null ? @object.text : null;
-        public List<dynamic> attachments => @object.attachments;
+        public List<Attachment> attachments => @object.attachments;
     }
+
+    public class Attachment {
+        public string type { get; set; }
+        public PhotoSaveData photo { get; set; }
+}
 
     public class UpdateResponse : IUpdatesResponse
     {

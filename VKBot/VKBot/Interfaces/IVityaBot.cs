@@ -22,5 +22,7 @@ namespace VKBot
         Task processTextMessage(IIncomingMessage message);
         Task processBestMemeAsync(IIncomingMessage message, VkontakteBot.Models.GetMemesMemes bestMeme, List<string> memeText);
         Task processRandomBestMemeAsync(IIncomingMessage message);
+
+        Task processPhoto(IIncomingMessage message);
     }
 }

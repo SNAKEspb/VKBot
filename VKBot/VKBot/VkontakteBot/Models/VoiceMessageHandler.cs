@@ -23,19 +23,19 @@ namespace VKBot.VkontakteBot.Models
                 //у гугла бесплатный лимит на 60 минту в месяц, если больше то надо бабки платить
                 //я там поставил на 120 секунд в день квоту, что бы за пределы не вылезало
                 //у меня вроде бесплатный режим стоит в аккаунте, но я хз как у них там сразу бабки снимает
-                if (attach.audio_message.duration < 10)
-                {
-                    var audioText = await bot.audioToText((string)attach.audio_message.link_mp3);
-                    if (!string.IsNullOrWhiteSpace(audioText))
-                    {
-                        await bot.processMemeAsync(message, audioText);
-                    }
-                    else
-                    {
-                        await bot.processMemeAsync(message, generateRandom());
-                    }
-                }
-                else
+                //if (attach.audio_message.duration < 10)
+                //{
+                //    var audioText = await bot.audioToText((string)attach.audio_message.link_mp3);
+                //    if (!string.IsNullOrWhiteSpace(audioText))
+                //    {
+                //        await bot.processMemeAsync(message, audioText);
+                //    }
+                //    else
+                //    {
+                //        await bot.processMemeAsync(message, generateRandom());
+                //    }
+                //}
+                //else
                 {
                     await bot.processMemeAsync(message, generateRandom());
                 }
