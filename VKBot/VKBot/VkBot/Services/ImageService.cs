@@ -30,26 +30,26 @@ namespace VKBot.VkontakteBot.Services
 
         public byte[] addTextToImage(byte[] imageData, string text)
         {
-            //using (var inputStream = new MemoryStream(imageData))
-            //using (var bitMap = new Bitmap(inputStream))
-            //using (var graphic = Graphics.FromImage(bitMap))
-            ////using (var font = new Font(FontFamily.GenericSansSerif, 20, FontStyle.Regular))
-            //using (var font = new Font("Calibri", (int)getSize(bitMap, text), FontStyle.Regular))
-            //{
+            using (var inputStream = new MemoryStream(imageData))
+            using (var bitMap = new Bitmap(inputStream))
+            using (var graphic = Graphics.FromImage(bitMap))
+            //using (var font = new Font(FontFamily.GenericSansSerif, 20, FontStyle.Regular))
+            using (var font = new Font("Calibri", (int)getSize(bitMap, text), FontStyle.Regular))
+            {
 
-            //    graphic.InterpolationMode = InterpolationMode.High;
-            //    graphic.SmoothingMode = SmoothingMode.HighQuality;
-            //    graphic.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-            //    graphic.CompositingQuality = CompositingQuality.HighQuality;
+                graphic.InterpolationMode = InterpolationMode.High;
+                graphic.SmoothingMode = SmoothingMode.HighQuality;
+                graphic.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+                graphic.CompositingQuality = CompositingQuality.HighQuality;
 
-            //    drawText(graphic, text, font);
-            //    //bitMap.Save("d:\\output.jpg", ImageFormat.Jpeg);
-            //    using (var outputStream = new MemoryStream())
-            //    {
-            //        bitMap.Save(outputStream, System.Drawing.Imaging.ImageFormat.Jpeg);
-            //        return outputStream.ToArray();
-            //    }
-            //}
+                drawText(graphic, text, font);
+                //bitMap.Save("d:\\output.jpg", ImageFormat.Jpeg);
+                using (var outputStream = new MemoryStream())
+                {
+                    bitMap.Save(outputStream, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    return outputStream.ToArray();
+                }
+            }
             return new byte[0];
         }
 

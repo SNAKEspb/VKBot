@@ -333,7 +333,13 @@ namespace VKBot
             try
             {
                 var photo = message.attachments.Select(t => t.photo.sizes.FirstOrDefault(size => size.type == "w")).FirstOrDefault();
+                if (photo == null) {
+                    photo = message.attachments.Select(t => t.photo.sizes.OrderByDescending(size => size.width).ThenBy(size => size.height).FirstOrDefault()).FirstOrDefault();
+                }
                 var url = photo.url;
+                if (string.IsNullOrWhiteSpace(url)) {
+                    return;
+                }
 
                 var uploadRegisterResponse = await vkService.photosGetMessagesUploadServerAsync(message.peer_id, _options.token, _options.apiVersion);
                 //mb upload_url should be stored
