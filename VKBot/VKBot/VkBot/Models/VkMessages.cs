@@ -53,10 +53,31 @@ namespace VKBot.VkontakteBot.Models
         public int height;
     }
 
-    public class UpdateMessageDataAction
+    public class UpdateMessage : IIncomingMessage
     {
+        public int group_id { get; set; }
         public string type { get; set; }
-        public int member_id { get; set; }
+        public string event_id { get; set; }
+        public string v { get; set; }
+        public UpdateMessageObject @object { get; set; }
+        //
+        bool hasMessage => @object != null && @object.message != null;
+        //
+        public string payload => hasMessage ? @object.message.payload : null;
+
+        public string peer_id => hasMessage ? @object.message.peer_id.ToString() : null;
+        public string MessageType => type;
+        public string from_id => hasMessage? @object.message.from_id.ToString() : null;
+        public string date => hasMessage ? @object.message.date.ToString() : null;//DateTime.Now.ToString();
+
+        public string text => hasMessage ? @object.message.text : null;
+        public List<Attachment> attachments => hasMessage ? @object.message.attachments : new List<Attachment>();
+    }
+
+    public class UpdateMessageObject
+    {
+        public UpdateMessageData message;
+        public UpdateMessageClientInfo client_info;
     }
 
     public class UpdateMessageData
@@ -74,27 +95,29 @@ namespace VKBot.VkontakteBot.Models
         public int random_id { get; set; }
         public List<Attachment> attachments { get; set; }
         public bool is_hidden { get; set; }
+        public string payload { get; set; }
+
     }
 
-    public class UpdateMessage : IIncomingMessage
+    public class UpdateMessageClientInfo
+    {
+        List<object> button_actions { get; set; }
+        public bool keyboard { get; set; }
+        public bool inline_keyboard { get; set; }
+        public bool carousel { get;set; }
+        public int lang_id { get; set; }
+    }
+
+    public class UpdateMessageDataAction
     {
         public string type { get; set; }
-        public UpdateMessageData @object { get; set; }
-        public int group_id { get; set; }
-
-        public string peer_id => @object != null ? @object.peer_id.ToString() : null;
-        public string MessageType => type;
-        public string from_id => @object != null ? @object.from_id.ToString() : null;
-        public string date => @object != null ? @object.date.ToString() : null;//DateTime.Now.ToString();
-
-        public string text => @object != null ? @object.text : null;
-        public List<Attachment> attachments => @object.attachments;
+        public int member_id { get; set; }
     }
 
     public class Attachment {
         public string type { get; set; }
         public PhotoSaveData photo { get; set; }
-}
+    }
 
     public class UpdateResponse : IUpdatesResponse
     {

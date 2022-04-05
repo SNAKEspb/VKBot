@@ -13,11 +13,11 @@ namespace VKBot
         string MessageType { get; }
         string from_id { get; }
         string date { get; }
-        int group_id { get; }
 
         string text { get; }
         List<Attachment> attachments { get; }
+        string payload { get; }
 
     }
-  
+
 }

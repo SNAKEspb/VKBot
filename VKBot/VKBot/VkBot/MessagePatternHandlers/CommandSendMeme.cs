@@ -17,7 +17,7 @@ namespace VKBot.VkontakteBot.MessagePatternHandlers
             var text = match.Groups[3].Value;
             if (text == "random")
             {
-                await bot.processRandomBestMemeAsync(new Models.UpdateMessage() { @object = new Models.UpdateMessageData() { peer_id = int.Parse(peerId) } });
+                await bot.processRandomBestMemeAsync(new Models.UpdateMessage() { @object = new Models.UpdateMessageObject() { message = new Models.UpdateMessageData { peer_id = int.Parse(peerId) } } });
             }
             else
             {

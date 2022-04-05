@@ -36,19 +36,19 @@ namespace VKBot.Controllers
 
         // POST api/values
         [HttpPost]
-        public Task<IActionResult> Post([FromBody] UpdateMessage messageBody)
+        public Task<IActionResult> Post([FromBody]object messageBody)
         {
-            //string messageBody = await Util.getRawBodyAsync(HttpContext.Request.Body);
             _logger.Log(NLog.LogLevel.Info, $"Start bot process {messageBody}");
-            var process = ProcessMessagesAsync(_bot, messageBody);
+            var process = ProcessMessagesAsync(_bot, messageBody.ToString());
             _logger.Log(NLog.LogLevel.Info, $"End bot process {process}");
             return process;
         }
 
-        async Task<IActionResult> ProcessMessagesAsync(IVityaBot bot, UpdateMessage message)
+        async Task<IActionResult> ProcessMessagesAsync(IVityaBot bot, string messageBody)
         {
             try
             {
+                var message = Newtonsoft.Json.JsonConvert.DeserializeObject<UpdateMessage>(messageBody.ToString());
                 //var message = Newtonsoft.Json.JsonConvert.DeserializeObject<UpdateMessage>(messageBody);
                 //check chache
                 //if cache already contains the message, then return ok result, else proceed
