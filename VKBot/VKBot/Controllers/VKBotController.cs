@@ -15,22 +15,17 @@ namespace VKBot.Controllers
     [ApiController]
     public class VKBotController : ControllerBase
     {
+        public VKBotController(IVityaBot bot, List<IUpdatesHandler<IIncomingMessage>> updatesHandlers, List<IUpdatesResultHandler<IIncomingMessage>> responseHandlers)
+        {
+            _bot = bot;
+            _updatesHandlers = updatesHandlers;
+            _responseHandlers = responseHandlers;
+        }
         static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
-        static IVityaBot bot = VkBot.getinstanse(_logger);
-        static List<IUpdatesHandler<IIncomingMessage>> updatesHandler = new List<IUpdatesHandler<IIncomingMessage>>()
-        {
-            //new AudioMessageHandler(),
-            //new CommandMessageHandler(),
-            new PhotoMessageHandler(),
-            new TextMessageHandler(),
-            new VoiceMessageHandler(),
-            new WallMessageHandler(),
-        };
+        private IVityaBot _bot;
 
-        static List<IUpdatesHandler<IIncomingMessage>> responseHandler = new List<IUpdatesHandler<IIncomingMessage>>()
-        {
-            new ConfirmationHandler(),
-        };
+        private List<IUpdatesHandler<IIncomingMessage>> _updatesHandlers;
+        private List<IUpdatesResultHandler<IIncomingMessage>> _responseHandlers;
 
         // GET: api/<controller>
         [HttpGet]
@@ -45,7 +40,7 @@ namespace VKBot.Controllers
         {
             //string messageBody = await Util.getRawBodyAsync(HttpContext.Request.Body);
             _logger.Log(NLog.LogLevel.Info, $"Start bot process {messageBody}");
-            var process = ProcessMessagesAsync(bot, messageBody);
+            var process = ProcessMessagesAsync(_bot, messageBody);
             _logger.Log(NLog.LogLevel.Info, $"End bot process {process}");
             return process;
         }
@@ -67,7 +62,7 @@ namespace VKBot.Controllers
                 cache.Add(cacheKey, message, DateTime.Now.AddMinutes(5));
                 //todo: separate interface for Task<HandlerResult>
                 //handle logic with response to vk
-                foreach (var handler in responseHandler)
+                foreach (var handler in _responseHandlers)
                 {
                     if (handler.CanHandle(message, bot))
                     {
@@ -77,7 +72,7 @@ namespace VKBot.Controllers
                 }
                 //todo: separate interface for Task 
                 //handle bot requests
-                foreach (var handler in updatesHandler)
+                foreach (var handler in _updatesHandlers)
                 {
                     if (handler.CanHandle(message, bot))
                     {

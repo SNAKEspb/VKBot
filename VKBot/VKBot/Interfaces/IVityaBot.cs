@@ -25,6 +25,6 @@ namespace VKBot
 
         Task processPhoto(IIncomingMessage message);
 
-        Task<string> getConfirmationMessage(IIncomingMessage message);
+        //Task<string> getConfirmationMessage(IIncomingMessage message);
     }
 }

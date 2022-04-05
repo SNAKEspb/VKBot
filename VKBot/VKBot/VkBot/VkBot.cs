@@ -7,28 +7,58 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using VKBot.VkontakteBot.Models;
 
 namespace VKBot
 {
     public class VkBot : IVityaBot
     {
+        static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
+        private VkontakteBot.Services.VKService vkService;
+        private VkontakteBot.Services.ImgFlipService imgflipService;
+        private VkontakteBot.Services.OnlineConverterService onlineConverterService;
+        private VkontakteBot.Services.GoogleService googleService;
+        private VkontakteBot.Services.MessageService messageService;
+        private VkontakteBot.Services.ImageService imageService;
+        private VKBotOptions _options;
+
+        public VkBot(IOptions<VKBotOptions> options)
+        {
+            _options = options.Value;
+
+            vkService = new VkontakteBot.Services.VKService(_logger);
+            imgflipService = new VkontakteBot.Services.ImgFlipService(_logger);
+            onlineConverterService = new VkontakteBot.Services.OnlineConverterService(_logger, _onlineConverterApiKey);
+            googleService = new VkontakteBot.Services.GoogleService(_logger);
+            messageService = new VkontakteBot.Services.MessageService(_logger);
+            imageService = new VkontakteBot.Services.ImageService(_logger);
+            mode = Mode.Release;
+            try
+            {
+                //todo: post cred command
+                //Google.Apis.Auth.OAuth2.GoogleCredential.FromFile("Cloud Project-a047b1f98427.json");
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(NLog.LogLevel.Info, "VkBot Error");
+                _logger.Log(NLog.LogLevel.Info, ex);
+            }
+        }
+
+        public string confimationCode => _options.confirmationCode;
+
+
         public enum Mode
         {
             Release,
             Debug,
             DebugOnly
         }
-        //static HttpClient _httpClient = new HttpClient();
-        public static Random _random = new Random();
 
-        //static string _url { get; set; } = "https://api.vk.com/";
-       
-        static string _token { get; set; } = "0c29646fefcc442729f323eaf428f999dba1bcc95abfe3da03d0459c7b55fe6b965a59585b14c7a1c24af";
-        static string _groupId { get; set; } = "179992947";
-        static string _apiVersion { get; set; } = "5.92";
-        static string _wait { get; set; } = "25";
-        static string _confirmationCode { get; set; } = "821df2ec";
+        public static Random _random = new Random();
 
         static string _imgFlipUrl { get; set; } = "https://api.imgflip.com/caption_image";
         static string _imgFlipUsername = "VityaBot";
@@ -38,68 +68,25 @@ namespace VKBot
 
         static List<VkontakteBot.Services.DataService.Meme> _memes = VkontakteBot.Services.DataService.activeMemes;
 
+        //for longpoll
         static string _key { get; set; }
         static string _ts { get; set; }
         static string _server { get; set; }
 
         public Mode mode { get; set; }
 
-
-        private NLog.Logger _logger;
-        private VkontakteBot.Services.VKService vkService;
-        private VkontakteBot.Services.ImgFlipService imgflipService;
-        private VkontakteBot.Services.OnlineConverterService onlineConverterService;
-        private VkontakteBot.Services.GoogleService googleService;
-        private VkontakteBot.Services.MessageService messageService;
-        private VkontakteBot.Services.ImageService imageService;
-
-
-        private static VkBot _instanse;
-        public static VkBot getinstanse(NLog.Logger logger)
-        {
-            if (_instanse == null)
-            {
-                _instanse = new VkBot(logger);
-            }
-            return _instanse;
-        }
-
-        public VkBot(NLog.Logger logger)
-        {
-            _logger = logger;
-            vkService = new VkontakteBot.Services.VKService(logger);
-            imgflipService = new VkontakteBot.Services.ImgFlipService(logger);
-            onlineConverterService = new VkontakteBot.Services.OnlineConverterService(logger, _onlineConverterApiKey);
-            googleService = new VkontakteBot.Services.GoogleService(logger);
-            messageService = new VkontakteBot.Services.MessageService(logger);
-            imageService = new VkontakteBot.Services.ImageService(logger);
-            mode = Mode.Release;
-            try
-            {
-                //todo: post cred command
-                //Google.Apis.Auth.OAuth2.GoogleCredential.FromFile("Cloud Project-a047b1f98427.json");
-                
-            }
-            catch(Exception ex)
-            {
-                _logger.Log(NLog.LogLevel.Info, "VkBot Error");
-                _logger.Log(NLog.LogLevel.Info, ex);
-            }
-        }
-
         public bool canProcess(string userId)
         {
             return mode != Mode.DebugOnly || VkontakteBot.Services.DataService.adminsIds.Contains(userId);
         }
 
-        public string confimationCode => _confirmationCode;
         public async Task<IRegisterResponse> AuthorizeAsync()
         {
             try
             {
                 _logger.Log(NLog.LogLevel.Info, "registerStart");
 
-                var result = await vkService.groupsGetLongPollServerAsync(_groupId, _token, _apiVersion);
+                var result = await vkService.groupsGetLongPollServerAsync(_options.groupId, _options.token, _options.apiVersion);
 
                 _key = result.response.key;
                 _ts = result.response.ts;
@@ -123,7 +110,7 @@ namespace VKBot
             {
                 _logger.Log(NLog.LogLevel.Info, " GetUpdatesStart");
 
-                var result = await vkService.checkLongPollUpdatesAsync(_server, _ts, _key, _wait, _apiVersion);
+                var result = await vkService.checkLongPollUpdatesAsync(_server, _ts, _key, _options.wait, _options.apiVersion);
 
                 if (result.failed != 0)
                 {
@@ -164,7 +151,7 @@ namespace VKBot
             {
                 var tmessage = (OutgoingMessage)message;
 
-                return await vkService.messagesSendAsync(tmessage, _groupId, _token, _apiVersion);
+                return await vkService.messagesSendAsync(tmessage, _options.groupId, _options.token, _options.apiVersion);
             }
             catch (Exception e)
             {
@@ -193,7 +180,7 @@ namespace VKBot
             {
                 _logger.Log(NLog.LogLevel.Info, $"Process meme for peer_id: {peerId}, meme id:{memeId}, text:{text}");
                 var memeUrl = await imgflipService.imgFlipCaptionImage(memeId, text, _imgFlipUsername, _imgFlipPassword);
-                var photoId = await vkService.savePhotoByUrl(memeUrl, peerId, _token, _apiVersion);
+                var photoId = await vkService.savePhotoByUrl(memeUrl, peerId, _options.token, _options.apiVersion);
                 var outgoingMessage = new OutgoingMessage()
                 {
                     peer_id = peerId,
@@ -274,7 +261,7 @@ namespace VKBot
                 
 
                 var memeUrl = await imgflipService.imgFlipCaptionImage(bestMeme.id, memeText, _imgFlipUsername, _imgFlipPassword);
-                var photoId = await vkService.savePhotoByUrl(memeUrl, message.peer_id, _token, _apiVersion);
+                var photoId = await vkService.savePhotoByUrl(memeUrl, message.peer_id, _options.token, _options.apiVersion);
                 var outgoingMessage = new OutgoingMessage()
                 {
                     peer_id = message.peer_id,
@@ -329,9 +316,9 @@ namespace VKBot
                     rev = "1",
                     //extended = 
                     //fields = 
-                    group_id = _groupId,
+                    group_id = _options.groupId,
                 };
-                await vkService.messagesGetHistory(request, _token, _apiVersion);
+                await vkService.messagesGetHistory(request, _options.token, _options.apiVersion);
 
             }
             catch (Exception ex)
@@ -348,7 +335,7 @@ namespace VKBot
                 var photo = message.attachments.Select(t => t.photo.sizes.FirstOrDefault(size => size.type == "w")).FirstOrDefault();
                 var url = photo.url;
 
-                var uploadRegisterResponse = await vkService.photosGetMessagesUploadServerAsync(message.peer_id, _token, _apiVersion);
+                var uploadRegisterResponse = await vkService.photosGetMessagesUploadServerAsync(message.peer_id, _options.token, _options.apiVersion);
                 //mb upload_url should be stored
 
                 using (WebClient client = new WebClient())
@@ -360,7 +347,7 @@ namespace VKBot
                     var newPhotoBytes = imageService.addTextToImage(photoBytes, text);
 
                     var photoUploadResponse = await vkService.uploadPictureAsync(uploadRegisterResponse.response.upload_url, message.peer_id, System.IO.Path.GetFileName(url), newPhotoBytes);
-                    var photoSaveResponse = await vkService.photosSaveMessagesPhotoAsync(photoUploadResponse, _token, _apiVersion);
+                    var photoSaveResponse = await vkService.photosSaveMessagesPhotoAsync(photoUploadResponse, _options.token, _options.apiVersion);
                     var photoSaveData = photoSaveResponse.response.FirstOrDefault();
 
                     var photoId = $"photo{photoSaveData.owner_id}_{photoSaveData.id}_{photoSaveData.access_key}";
@@ -383,14 +370,14 @@ namespace VKBot
             }
         }
 
-        public async Task<String> getConfirmationMessage(IIncomingMessage message) {
-            var codeDict = new Dictionary<int, string>();
-            codeDict.Add(179992947, "f04bcc93");
-            codeDict.Add(212459550, "88cb2a80");
-            string result = "";
-            codeDict.TryGetValue(message.group_id, out result);
-            return result;
-        }
+        //public async Task<String> getConfirmationMessage(IIncomingMessage message) {
+        //    var codeDict = new Dictionary<int, string>();
+        //    codeDict.Add(179992947, "f04bcc93");
+        //    codeDict.Add(212459550, "88cb2a80");
+        //    string result = "";
+        //    codeDict.TryGetValue(message.group_id, out result);
+        //    return result;
+        //}
 
 
     }

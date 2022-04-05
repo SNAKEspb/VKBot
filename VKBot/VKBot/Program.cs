@@ -25,7 +25,7 @@ namespace VKBot
                 logger.Debug("init main");
                 CreateWebHostBuilder(args).Build().Run();
                 //init bot and services
-                VKBot.VkBot.getinstanse(logger);
+                //VKBot.VkBot.getinstanse(logger);
                 
             }
             catch (Exception ex)

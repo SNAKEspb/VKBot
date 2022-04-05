@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 
-namespace StirkaBot.VKBot.Models
+namespace VKBot.VkontakteBot.Models
 {
     public class VKBotOptions
     {
@@ -13,5 +13,6 @@ namespace StirkaBot.VKBot.Models
         public string groupId { get; set; }
         public string apiVersion { get; set; }
         public string confirmationCode { get; set; }
+        public string wait { get; set; }
     }
 }
