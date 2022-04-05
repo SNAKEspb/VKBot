@@ -80,7 +80,7 @@ namespace VKBot.VkontakteBot.Models
     {
         public string type { get; set; }
         public UpdateMessageData @object { get; set; }
-        public int group_id { get; set; }
+        public int group_id => group_id;
 
         public string peer_id => @object != null ? @object.peer_id.ToString() : null;
         public string MessageType => type;

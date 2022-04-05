@@ -13,7 +13,7 @@ namespace VKBot.VkontakteBot.Models
         }
         public async Task<HandlerResult> HandleAsync(IIncomingMessage message, IVityaBot bot)
         {
-            return new HandlerResult() { message = bot.confimationCode};
+            return new HandlerResult() { message = await bot.getConfirmationMessage(message)};
         }
 
     }

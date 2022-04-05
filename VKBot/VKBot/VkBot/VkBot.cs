@@ -383,6 +383,15 @@ namespace VKBot
             }
         }
 
+        public async Task<String> getConfirmationMessage(IIncomingMessage message) {
+            var codeDict = new Dictionary<int, string>();
+            codeDict.Add(179992947, "f04bcc93");
+            codeDict.Add(212459550, "88cb2a80");
+            string result = "";
+            codeDict.TryGetValue(message.group_id, out result);
+            return result;
+        }
+
 
     }
 }

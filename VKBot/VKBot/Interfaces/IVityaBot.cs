@@ -24,5 +24,7 @@ namespace VKBot
         Task processRandomBestMemeAsync(IIncomingMessage message);
 
         Task processPhoto(IIncomingMessage message);
+
+        Task<string> getConfirmationMessage(IIncomingMessage message);
     }
 }
