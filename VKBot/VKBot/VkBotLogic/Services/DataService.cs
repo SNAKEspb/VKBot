@@ -48,6 +48,8 @@ namespace VKBot.VkBotLogic.Services
 
         public static List<string> vityaShortMessages { get; set; } = vityaMessages.Where(t => t.Length > 10 && t.Length < 30).GroupBy(t => t).Select(t => t.First()).ToList();
 
+        public static List<string> vityaMediumMessages { get; set; } = vityaMessages.Where(t => t.Length < 100).GroupBy(t => t).Select(t => t.First()).ToList();
+
         public static Dictionary<string, string> pictures = new Dictionary<string, string>()
         {
             { "communityLike", "photo-179992947_456239019" },
@@ -58,8 +60,8 @@ namespace VKBot.VkBotLogic.Services
         public static List<User> users = new List<User>()
         {
             new User(){ name = "Vitya", id = vityaId, access = 2},
-            new User(){ name = "me", id = "1556462", access = 4},
-            new User(){ name = "sanya", id = "1500589", access = 4},
+            new User(){ name = "Mitya", id = "1556462", access = 4},
+            new User(){ name = "Sanya", id = "1500589", access = 4},
         };
 
         public static List<string> adminsIds => users.Where(t => t.access == 4).Select(t => t.id).ToList();

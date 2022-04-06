@@ -288,7 +288,7 @@ namespace VKBot.VkBotLogic
                 var randomMessages = new List<string>();
                 for (int i = 0; i < int.Parse(randomMeme.box_count); i++)
                 {
-                    randomMessages.Add(VKBot.VkBotLogic.Services.DataService.vityaMessages[_random.Next(0, VKBot.VkBotLogic.Services.DataService.vityaMessages.Count)]);
+                    randomMessages.Add(VKBot.VkBotLogic.Services.DataService.vityaMediumMessages[_random.Next(0, VKBot.VkBotLogic.Services.DataService.vityaMessages.Count)]);
                 }
 
                 await processBestMemeAsync(message, randomMeme, randomMessages);
