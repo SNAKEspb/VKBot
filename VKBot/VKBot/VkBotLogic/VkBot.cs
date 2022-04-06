@@ -145,18 +145,18 @@ namespace VKBot.VkBotLogic
         }
 
 
-        public async Task<bool> SendMessageAsync(IOutgoingMessage message)
+        public async Task<string> SendMessageAsync(IOutgoingMessage message)
         {
             try
             {
                 var tmessage = (OutgoingMessage)message;
 
-                return await vkService.messagesSendAsync(tmessage, _options.groupId, _options.token, _options.apiVersion);
+                return await vkService.sendRequest(tmessage, "messages.send", _options);
             }
             catch (Exception e)
             {
                 _logger.Log(NLog.LogLevel.Error, e, "SendMessageAsync error");
-                return false;
+                return null;
             }
 
         }
@@ -299,35 +299,6 @@ namespace VKBot.VkBotLogic
             }
         }
 
-        [Obsolete("no need")]
-        public async Task<bool> getChatHistory(IIncomingMessage message)
-        {
-            try
-            {
-                //var uri = new Uri(url);
-                //_logger.Log(NLog.LogLevel.Info, uri);
-                var request = new VKBot.Services.VKService.HistoryRequest
-                {
-                    offset = 0,
-                    count = 200,
-                    user_id = "1556462",
-                    peer_id = message.peer_id,
-                    start_message_id = "0",
-                    rev = "1",
-                    //extended = 
-                    //fields = 
-                    group_id = _options.groupId,
-                };
-                await vkService.messagesGetHistory(request, _options.token, _options.apiVersion);
-
-            }
-            catch (Exception ex)
-            {
-                _logger.Log(NLog.LogLevel.Error, ex, "audioToText Error");
-            }
-            return false;
-        }
-
         public async Task processPhoto(IIncomingMessage message)
         {
             try
@@ -352,7 +323,7 @@ namespace VKBot.VkBotLogic
 
                     var newPhotoBytes = imageService.addTextToImage(photoBytes, text);
 
-                    var photoUploadResponse = await vkService.uploadPictureAsync(uploadRegisterResponse.response.upload_url, message.peer_id, System.IO.Path.GetFileName(url), newPhotoBytes);
+                    var photoUploadResponse = await vkService.uploadPictureAsync(uploadRegisterResponse.response.upload_url, System.IO.Path.GetFileName(url), newPhotoBytes);
                     var photoSaveResponse = await vkService.photosSaveMessagesPhotoAsync(photoUploadResponse, _options.token, _options.apiVersion);
                     var photoSaveData = photoSaveResponse.response.FirstOrDefault();
 

@@ -11,13 +11,13 @@ namespace VKBot
         string confimationCode { get; }
         Task<IRegisterResponse> AuthorizeAsync();
         Task<IUpdatesResponse> GetUpdatesAsync();
-        Task<bool> SendMessageAsync(IOutgoingMessage message);
+        Task<string> SendMessageAsync(IOutgoingMessage message);
         //сюда добавить методы заливания аттачей? картинок / аудио или хуйнують логику прямо в сенд мессаж
         Task<string> audioToText(string url);
         Task processMemeAsync(IIncomingMessage message, string text);
         Task processMemeByIdAsync(string peerId, string memeId, string text);
         VKBot.VkBotLogic.VkBot.Mode mode { get; set; }
-        Task<bool> getChatHistory(IIncomingMessage message);
+        //Task<bool> getChatHistory(IIncomingMessage message);
         bool canProcess(string userId);
         Task processTextMessage(IIncomingMessage message);
         Task processBestMemeAsync(IIncomingMessage message, VKBot.VkBotLogic.Models.GetMemesMemes bestMeme, List<string> memeText);

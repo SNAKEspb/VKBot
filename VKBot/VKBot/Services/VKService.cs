@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using VKBot.VkBotLogic.Models;
 
 namespace VKBot.Services
@@ -43,6 +44,27 @@ namespace VKBot.Services
             return Newtonsoft.Json.JsonConvert.DeserializeObject<UpdateResponse>(response);
         }
 
+        public async Task<string> sendRequest(IOutgoingMessage message, string method, VKBotOptions options)
+        {
+            var urlBuilder = new UriBuilder(_url)
+            {
+                Path = $"method/{method}",
+                Query = $"group_id={options.groupId}&access_token={options.token}&v={options.apiVersion}"
+            };
+            _logger.Log(NLog.LogLevel.Info, urlBuilder);
+            var values = message.GetType()
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                .Select(t => new { key = t.Name, value = t.GetValue(message, null) })
+                .Where(t => t.value != null)
+                .ToDictionary(t => t.key, t => t.value.ToString());
+            var content = new FormUrlEncodedContent(values);
+            var response = await _httpClient.PostAsync(urlBuilder.Uri, content);
+            var responseBody = await response.Content.ReadAsStringAsync();
+            _logger.Log(NLog.LogLevel.Info, responseBody);
+            return responseBody;
+        }
+
+
         public async Task<bool> messagesSendAsync(OutgoingMessage message, string groupId, string token, string apiVersion)
         {
             var urlBuilder = new UriBuilder(_url)
@@ -80,7 +102,7 @@ namespace VKBot.Services
             return Newtonsoft.Json.JsonConvert.DeserializeObject<RegisterResponse>(responseBody);
         }
         
-        public async Task<PhotoUploadResponse> uploadPictureAsync(string upload_url, string peer_id, string pictureName, byte[] pictureBytes)
+        public async Task<PhotoUploadResponse> uploadPictureAsync(string upload_url, string pictureName, byte[] pictureBytes)
         {
             //would work with Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             //check Program.cs
@@ -110,7 +132,7 @@ namespace VKBot.Services
             {
                 byte[] photoBytes = await client.DownloadDataTaskAsync(uri);
 
-                return await uploadPictureAsync(upload_url, peer_id, System.IO.Path.GetFileName(uri.LocalPath), photoBytes);
+                return await uploadPictureAsync(upload_url, System.IO.Path.GetFileName(uri.LocalPath), photoBytes);
             }
         }
 
@@ -150,52 +172,6 @@ namespace VKBot.Services
             var photoSaveData = photoSaveResponse.response.FirstOrDefault();
             return $"photo{photoSaveData.owner_id}_{photoSaveData.id}_{photoSaveData.access_key}";
 
-        }
-
-        public class HistoryRequest
-        {
-            public int offset;
-            public int count;
-            public string user_id;
-            public string peer_id;
-            public string start_message_id;
-            public string rev;
-            public string extended;
-            public string fields;
-            public string group_id;
-        }
-
-        public async Task messagesGetHistory(HistoryRequest request, string token, string apiVersion)
-        {
-            var urlBuilder = new UriBuilder(_url)
-            {
-                Path = "method/messages.getHistory",
-                Query = $"access_token={token}&v={apiVersion}"
-            };
-            _logger.Log(NLog.LogLevel.Info, urlBuilder);
-
-            var values = new Dictionary<string, string>
-                {
-                    { "offset", request.offset.ToString()},
-                    { "count", request.count.ToString()},
-                    { "user_id", request.user_id },
-                    { "peer_id", request.peer_id },
-                    { "start_message_id", request.start_message_id },
-                    { "rev", request.rev },
-                    { "extended", request.extended },
-                    { "fields", request.fields },
-                    { "group_id", request.group_id },
-                };
-
-            var content = new FormUrlEncodedContent(values);
-
-            var response = await _httpClient.PostAsync(urlBuilder.Uri, content);
-
-            var responseBody = await response.Content.ReadAsStringAsync();
-
-            _logger.Log(NLog.LogLevel.Info, responseBody);
-
-            //return Newtonsoft.Json.JsonConvert.DeserializeObject<PhotoSaveResponse>(responseBody);
         }
     }
 }
