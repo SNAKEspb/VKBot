@@ -69,7 +69,7 @@ namespace VKBot.Controllers
 
             //_logger.Log(NLog.LogLevel.Info, responseBody);
 
-            //var request = new VkontakteBot.Services.VKService.HistoryRequest
+            //var request = new VkBotLogic.Services.VKService.HistoryRequest
             //{
             //    offset = 0,
             //    count = 200,
@@ -81,7 +81,7 @@ namespace VKBot.Controllers
             //    //fields = 
             //    group_id = _groupId,
             //};
-            //var vkService = new VkontakteBot.Services.VKService(_logger);
+            //var vkService = new VkBotLogic.Services.VKService(_logger);
             //vkService.messagesGetHistory(request, access_token, "5.95");
 
             return access_token;

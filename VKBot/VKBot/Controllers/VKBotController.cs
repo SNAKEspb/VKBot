@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using VKBot.VkontakteBot.Models;
+using VKBot.VkBotLogic.Models;
 using VKBot.Common;
 using System.Runtime.Caching;
 

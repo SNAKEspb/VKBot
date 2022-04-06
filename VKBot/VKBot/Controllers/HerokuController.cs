@@ -11,7 +11,7 @@ namespace VKBot.Controllers
     public class HerokuController : ControllerBase
     {
         static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
-        static VkontakteBot.Services.AwakerService awakerService = new VkontakteBot.Services.AwakerService(_logger);
+        static VKBot.VkBotLogic.Services.AwakerService awakerService = new VKBot.VkBotLogic.Services.AwakerService(_logger);
 
         // GET: api/<controller>
         [HttpGet]
