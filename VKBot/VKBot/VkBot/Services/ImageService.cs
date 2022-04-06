@@ -21,7 +21,7 @@ namespace VKBot.VkontakteBot.Services
         public ImageService(NLog.Logger logger)
         {
             _logger = logger;
-            fontName = new List<string> { "Calibri", "DejaVu Sans Mono" }.FirstOrDefault(t => SystemFonts.Families.Any(f => f.Name == t)) ?? SystemFonts.Families.Select(t => t.Name).FirstOrDefault();
+            fontName = "DejaVu Sans Mono";// new List<string> { "Calibri", "DejaVu Sans Mono" }.FirstOrDefault(t => SystemFonts.Families.Any(f => f.Name == t)) ?? SystemFonts.Families.Select(t => t.Name).FirstOrDefault();
         }
 
         public byte[] addTextToImage(byte[] imageData, string text)
