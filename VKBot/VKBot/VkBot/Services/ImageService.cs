@@ -16,31 +16,37 @@ namespace VKBot.VkontakteBot.Services
     {
         private NLog.Logger _logger;
 
+        private string fontName;
+
         public ImageService(NLog.Logger logger)
         {
             _logger = logger;
+            fontName = new List<string> { "Calibri", "DejaVu Sans" }.FirstOrDefault(t => SystemFonts.Families.Any(f => f.Name == t)) ?? SystemFonts.Families.Select(t => t.Name).FirstOrDefault();
         }
 
         public byte[] addTextToImage(byte[] imageData, string text)
         {
-            IImageFormat format;
-            using (var image = Image.Load(imageData, out format))
+            if (fontName != null)
             {
-                var font = SystemFonts.CreateFont("Calibri", getSize(image, text), FontStyle.Regular);
-
-                TextOptions options = new TextOptions(font)
+                IImageFormat format;
+                using (var image = Image.Load(imageData, out format))
                 {
-                    HorizontalAlignment = HorizontalAlignment.Right // Right align
-                };
+                    var font = SystemFonts.CreateFont(fontName, getSize(image, text), FontStyle.Regular);
 
-                PointF point = getPoint(image, text, options);
+                    TextOptions options = new TextOptions(font)
+                    {
+                        HorizontalAlignment = HorizontalAlignment.Right // Right align
+                    };
 
-                image.Mutate(x => x.DrawText(text, font, Brushes.Solid(Color.Black), Pens.Solid(Color.White, 1), point));
+                    PointF point = getPoint(image, text, options);
 
-                using (var outputStream = new MemoryStream())
-                {
-                    image.Save(outputStream, format);
-                    return outputStream.ToArray();
+                    image.Mutate(x => x.DrawText(text, font, Brushes.Solid(Color.Black), Pens.Solid(Color.White, 1), point));
+
+                    using (var outputStream = new MemoryStream())
+                    {
+                        image.Save(outputStream, format);
+                        return outputStream.ToArray();
+                    }
                 }
             }
 
