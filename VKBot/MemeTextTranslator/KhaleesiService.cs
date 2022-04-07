@@ -17,7 +17,7 @@ namespace MemeTextTranslator
             int textLen = text.Length;
             int minLen = 100;
             var sentimentScore = SentimentAnalyzer.getSentimentScore(text);
-            var lengthMultiplier = textLen > minLen ? 1 : textLen / minLen;
+            var lengthMultiplier = textLen > minLen ? 1.0 : (double)textLen / minLen;
             var chance = (chanceModifier * (Math.Abs(sentimentScore) + 1) * lengthMultiplier);
             return _random.Next(0, 100) < chance;
         }
