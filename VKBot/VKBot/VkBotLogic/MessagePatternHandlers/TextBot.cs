@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using VKBot.VkBotLogic.Services;
+using MemeTextTranslator;
 
 namespace VKBot.VkBotLogic.MessagePatternHandlers
 {
@@ -17,7 +17,7 @@ namespace VKBot.VkBotLogic.MessagePatternHandlers
         {
             //todo: random event
             var randInt = _random.Next(0, 100);
-            if (randInt < 80)
+            if (randInt < 90)
             {
                 await funcs[0](message, bot);
             }
@@ -40,7 +40,7 @@ namespace VKBot.VkBotLogic.MessagePatternHandlers
                 var outgoingMessage = new Models.OutgoingMessage()
                 {
                     peer_id = message.peer_id,
-                    message = $"{Generator.generate(SwearWordGenerator.Type.Adjective, 2, Sex.M, Case.I)} {Generator.generate(SwearWordGenerator.Type.Noun, 2, Sex.M, Case.I)}!"
+                    message =  _random.NextDouble() >= 0.5 ? KhaleesiService.generate(message.text) : CheemsService.generate(message.text)
                 };
                 await bot.SendMessageAsync(outgoingMessage);
             },
