@@ -15,7 +15,7 @@ namespace VKBot.VkBotLogic.MessagePatternHandlers
 
         public override async Task handleAsync(IIncomingMessage message, IVityaBot bot, Match match)
         {
-            if (KhaleesiService.calculateChance(message.text))
+            if (KhaleesiService.calculateChance(message.text, 10))
             {
                 var newMessage = _random.NextDouble() >= 0.5 ? KhaleesiService.generate(message.text) : CheemsService.generate(message.text);
                 if (newMessage != message.text)
