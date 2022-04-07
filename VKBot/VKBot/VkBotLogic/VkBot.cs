@@ -285,10 +285,11 @@ namespace VKBot.VkBotLogic
                 var bestMemes = await imgflipService.bestMemes(_imgFlipUsername, _imgFlipPassword);
                 var randomMeme = bestMemes[_random.Next(0, bestMemes.Count)];
 
+                var messages = VKBot.VkBotLogic.Services.DataService.vityaMediumMessages;
                 var randomMessages = new List<string>();
                 for (int i = 0; i < int.Parse(randomMeme.box_count); i++)
                 {
-                    randomMessages.Add(VKBot.VkBotLogic.Services.DataService.vityaMediumMessages[_random.Next(0, VKBot.VkBotLogic.Services.DataService.vityaMessages.Count)]);
+                    randomMessages.Add(messages[_random.Next(0, messages.Count)]);
                 }
 
                 await processBestMemeAsync(message, randomMeme, randomMessages);
