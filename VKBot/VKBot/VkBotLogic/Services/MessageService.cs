@@ -41,12 +41,15 @@ namespace VKBot.VkBotLogic.Services
             new MessagePatternHandlers.CommandTestMemes(@"^\/test\s*memes", 10,  4),
             new MessagePatternHandlers.CommandTestInfo(@"^\/test\s*info", 10,  4),
             new MessagePatternHandlers.TextAnyVitya(@".*", 9, 2, new List<string>(){ DataService.vityaId}),
+            new MessagePatternHandlers.TextAny(@".*", 8, 0),
             new MessagePatternHandlers.TextBatman(@"б[еэ]тм[ае]н|b[ae]tm[ae]n", 9, 0),
             new MessagePatternHandlers.TextBot(@"(^|\.|\,|\s)бот(\w{0,2})?", 9, 0),
             new MessagePatternHandlers.TextHttp(@"^http", 10, 0),
             new MessagePatternHandlers.TextJoke(@"((?:заеб|залуп|говн|плох|хуй|хуе).*шутк[a|и]?)|((?:^)?шутк[a|и]?.*(?:заеб|залуп|говн|плох|хуй|хуе|заеб))|(шутит|шутишь|шутканул|пошутил)", 9, 0),
             new MessagePatternHandlers.TextRespect(@"уважение|увожение", 9, 0),
-            new MessagePatternHandlers.UserCommandMeme(@"(?:^!|(?:говорит|сказал):?\s(?:что)?)\s*(.*)",9, 1),
+            new MessagePatternHandlers.UserCommandCheems(@"^!cheems\s*(.*)",9, 1),
+            new MessagePatternHandlers.UserCommandKhaleesi(@"^!khaleesi\s*(.*)",9, 1),
+            new MessagePatternHandlers.UserCommandMeme(@"(?:^!|(?:говорит|сказал):?\s(?:что)?)\s*(.*)",8, 1),
             new MessagePatternHandlers.UserCommandRandom(@"^!random", 10, 1),
         }.OrderByDescending(t => t.priority).ThenByDescending(t => t.access).ThenByDescending(t => t.pattern.Length).ToList();//priority > access >  pattern lenght;
 

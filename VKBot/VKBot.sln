@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.489
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VKBot", "VKBot\VKBot.csproj", "{E7C1B2CE-3C90-45CA-BA9D-FF1EADDAA211}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwearWordGenerator", "SwearWordGenerator\SwearWordGenerator.csproj", "{2F883432-BDB0-4133-BFAC-959ECE28FB1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VkHistoryParser", "VkHistoryParser\VkHistoryParser.csproj", "{967FA575-25FB-428F-ADFE-31C426280455}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VkHistoryParser", "VkHistoryParser\VkHistoryParser.csproj", "{967FA575-25FB-428F-ADFE-31C426280455}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemeTextTranslator", "MemeTextTranslator\MemeTextTranslator.csproj", "{DFBD979F-5CB6-486D-AB52-FFCF728C448C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{967FA575-25FB-428F-ADFE-31C426280455}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{967FA575-25FB-428F-ADFE-31C426280455}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{967FA575-25FB-428F-ADFE-31C426280455}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFBD979F-5CB6-486D-AB52-FFCF728C448C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFBD979F-5CB6-486D-AB52-FFCF728C448C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFBD979F-5CB6-486D-AB52-FFCF728C448C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFBD979F-5CB6-486D-AB52-FFCF728C448C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
