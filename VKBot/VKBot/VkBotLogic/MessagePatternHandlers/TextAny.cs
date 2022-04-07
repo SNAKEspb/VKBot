@@ -17,12 +17,17 @@ namespace VKBot.VkBotLogic.MessagePatternHandlers
         {
             if (KhaleesiService.calculateChance(message.text))
             {
-                var outgoingMessage = new Models.OutgoingMessage()
+                var newMessage = _random.NextDouble() >= 0.5 ? KhaleesiService.generate(message.text) : CheemsService.generate(message.text);
+                if (newMessage != message.text)
                 {
-                    peer_id = message.peer_id,
-                    message = _random.NextDouble() >= 0.5 ? KhaleesiService.generate(message.text) : CheemsService.generate(message.text)
-                };
-                await bot.SendMessageAsync(outgoingMessage);
+                    var outgoingMessage = new Models.OutgoingMessage()
+                    {
+                        peer_id = message.peer_id,
+                        message = newMessage
+                    };
+                    await bot.SendMessageAsync(outgoingMessage);
+                }
+                    
             }
         }
     }
